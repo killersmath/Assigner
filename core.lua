@@ -6,35 +6,62 @@ Assigner = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceEve
 local T  = AceLibrary("Tablet-2.0")
 
 defaults = {
-  ChannelType = 1,
-  CustomChannel = 1,
   Active = true,
-  ShortStringMode = false,
-  Assigns = {
-    -- Skull
-    ["ASDropDownPlayer81"] = "NONE",
-    ["ASDropDownPlayer82"] = "NONE",
-    -- X
-    ["ASDropDownPlayer71"] = "NONE",
-    ["ASDropDownPlayer72"] = "NONE",
-    -- Square
-    ["ASDropDownPlayer61"] = "NONE",
-    ["ASDropDownPlayer62"] = "NONE",
-    -- Triangle
-    ["ASDropDownPlayer41"] = "NONE",
-    ["ASDropDownPlayer42"] = "NONE",
-    -- Diamond
-    ["ASDropDownPlayer31"] = "NONE",
-    ["ASDropDownPlayer32"] = "NONE",
-    -- Moon
-    ["ASDropDownPlayer51"] = "NONE",
-    ["ASDropDownPlayer52"] = "NONE",
-    -- Circle
-    ["ASDropDownPlayer21"] = "NONE",
-    ["ASDropDownPlayer22"] = "NONE",
-    -- Star
-    ["ASDropDownPlayer11"] = "NONE",
-    ["ASDropDownPlayer12"] = "NONE",
+  CurrentFrameID = 1,
+  Pages = {
+    [2] = {
+      ShortStringMode = false,
+      ChannelType = 1,
+      CustomChannel = 1,
+      Assigns = {
+        Prefix = "ASDropDownPlayerPage2",
+        Data = {
+          -- Skull
+          ["ASDropDownPlayerPage281"] = "NONE",
+          ["ASDropDownPlayerPage282"] = "NONE",
+          -- X
+          ["ASDropDownPlayerPage271"] = "NONE",
+          ["ASDropDownPlayerPage272"] = "NONE",
+          -- Square
+          ["ASDropDownPlayerPage261"] = "NONE",
+          ["ASDropDownPlayerPage262"] = "NONE",
+          -- Triangle
+          ["ASDropDownPlayerPage241"] = "NONE",
+          ["ASDropDownPlayerPage242"] = "NONE",
+          -- Diamond
+          ["ASDropDownPlayerPage231"] = "NONE",
+          ["ASDropDownPlayerPage232"] = "NONE",
+          -- Moon
+          ["ASDropDownPlayerPage251"] = "NONE",
+          ["ASDropDownPlayerPage252"] = "NONE",
+          -- Circle
+          ["ASDropDownPlayerPage221"] = "NONE",
+          ["ASDropDownPlayerPage222"] = "NONE",
+          -- Star
+          ["ASDropDownPlayerPage211"] = "NONE",
+          ["ASDropDownPlayerPage212"] = "NONE",
+        }
+      }
+    }
+  }
+}
+
+Assigner.constants = {
+	backdrop = {
+		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+		tile = true,
+		tileSize = 16,
+		insets = {left = -1.5, right = -1.5, top = -1.5, bottom = -1.5},
+  },
+  iconTable = {
+    [1] = "Star",
+    [2] = "Circle",
+    [3] = "Diamond",
+    [4] = "Triangle",
+    [5] = "Moon",
+    [6] = "Square",
+    [7] = "Cross",
+    [8] = "Skull",
   }
 }
 
@@ -105,7 +132,7 @@ end
 
 function Assigner:OnClick()
   if(arg1 == "LeftButton") then
-    self.ui.mainFrame:Show();
+    self.ui.frame:Show();
   end
 end
 
@@ -149,32 +176,33 @@ function Assigner:SetActiveStatusOption(newStatus)
 end
 
 function Assigner:GetMarkString(markID)
+  local prefix = Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Prefix
   local message = ""
-  if(Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."1"] ~= "NONE" or Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"] ~= "NONE") then
-    if(Assigner.db.profile.ShortStringMode or Assigner.db.profile.ChannelType == 2) then
+  if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"] ~= "NONE" or Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
+    if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ShortStringMode or Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType == 2) then
       if(not Assigner.firstPrint) then
         message = message .. "; "
       else
         Assigner.firstPrint = false
       end
       message = message .. "("..iconTable[markID].."):"
-      if(Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."1"] ~= "NONE") then
-        message = message .. " " .. Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."1"]
-          if(Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"] ~= "NONE") then
-            message = message .. ", " .. Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"]
+      if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"] ~= "NONE") then
+        message = message .. " " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"]
+          if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
+            message = message .. ", " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"]
           end
-      elseif(Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"] ~= "NONE") then
-        message = message.." " .. Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"]
+      elseif(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
+        message = message.." " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"]
       end
     else
       message = message .. "\n("..iconTable[markID].."):"
-      if(Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."1"] ~= "NONE") then
-        message = message .. " " .. Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."1"]
-        if(Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"] ~= "NONE") then
-          message = message .. ", " .. Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"]
+      if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"] ~= "NONE") then
+        message = message .. " " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"]
+        if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
+          message = message .. ", " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"]
         end
-      elseif(Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"] ~= "NONE") then
-        message = message.." " .. Assigner.db.profile.Assigns["ASDropDownPlayer"..markID.."2"]
+      elseif(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
+        message = message.." " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"]
       end
     end
   end
@@ -187,7 +215,7 @@ function Assigner:PostAssignement()
 
   local hasAssign = false
 
-  for _, value in Assigner.db.profile.Assigns do
+  for _, value in Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns do
     if (value ~= "NONE") then
       hasAssign = true
       break
@@ -199,7 +227,7 @@ function Assigner:PostAssignement()
   if (hasAssign) then
     Assigner.firstPrint = true
 
-    if(not Assigner.db.profile.ShortStringMode and Assigner.db.profile.ChannelType ~= 2) then
+    if(not Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ShortStringMode and Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType ~= 2) then
       message = message .. "=-------- Assignement --------="
     end
 
@@ -215,12 +243,12 @@ function Assigner:PostAssignement()
     message = "No Assigns"
   end
 
-  if(Assigner.db.profile.ChannelType == 1) then
+  if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType == 1) then
     SendChatMessage(message, "RAID")
-  elseif(Assigner.db.profile.ChannelType == 2) then
+  elseif(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType == 2) then
     SendChatMessage(message, "RAID_WARNING")
   else
-    SendChatMessage(message, "CHANNEL", nil, tonumber(Assigner.ui.channelEditBox:GetText()))
+    SendChatMessage(message, "CHANNEL", nil, Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].CustomChannel)
   end
 
   globalLastAnnounceTime = currentTime

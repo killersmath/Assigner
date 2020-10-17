@@ -9,198 +9,215 @@ function Assigner.ui:InitializeUi()
   ---------------
   -- Main Frame
   ---------------
-  self.mainFrame = CreateFrame("Frame", nil, UIParent)
-  self.mainFrame:SetFrameStrata("BACKGROUND")
-  self.mainFrame:SetWidth(440) -- Set these to whatever height/width is needed 
-  self.mainFrame:SetHeight(516) -- for your Texture
-  self.mainFrame:SetPoint("CENTER", 0, 0)
-  self.mainFrame:EnableMouse(true)
-  self.mainFrame:SetMovable(true)
-  self.mainFrame:RegisterForDrag("LeftButton")
-  self.mainFrame:SetScript("OnDragStart", function () self.mainFrame:StartMoving() end)
-  self.mainFrame:SetScript("OnDragStop", function () self.mainFrame:StopMovingOrSizing() end)
-  self.mainFrame:SetScript("OnHide", function () self.mainFrame:StopMovingOrSizing() end)
-  self.mainFrame:SetBackdrop({ 
-    bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    --edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", 
-    tile = true,
-    tileSize = 32,  
-    --edgeSize = 35, 
-    insets = { left = 6, right = 6, top = 6, bottom = 6 } })
-  self.mainFrame:SetBackdropColor( 0, 0, 0, .9)
+  self.frame = CreateFrame("Frame", nil, UIParent)
+  self.frame:SetFrameStrata("DIALOG")
+  self.frame:SetWidth(720) -- Set these to whatever height/width is needed 
+  self.frame:SetHeight(400) -- for your Texture
+  self.frame:SetPoint("CENTER", 0, 0)
+  self.frame:EnableMouse(true)
+  self.frame:SetMovable(true)
+  self.frame:RegisterForDrag("LeftButton")
+  self.frame:SetClampedToScreen( true )
+  self.frame:SetScript("OnDragStart", function () self.frame:StartMoving() end)
+  self.frame:SetScript("OnDragStop", function () self.frame:StopMovingOrSizing() end)
+  self.frame:SetScript("OnHide", function () self.frame:StopMovingOrSizing() end)
+  self.frame:SetBackdrop(Assigner.constants.backdrop)
+  self.frame:SetBackdropColor(0, 0, 0, 0.9)
 
-  ---------------
-  -- Top Title
-  ---------------
-
-  -- Frame
-  self.topTitleFrame = CreateFrame("Frame", nil, self.mainFrame)
-  self.topTitleFrame:SetWidth(210)
-  self.topTitleFrame:SetHeight(40)
-  self.topTitleFrame:SetPoint("TOP", self.mainFrame, "TOP", 0, 26)
-  self.topTitleFrame:SetBackdrop({
-    bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-    edgeSize = 30,
-    insets = { left = 4, right = 4, top = 3, bottom = 4 }
-  })
-  self.topTitleFrame:SetBackdropColor(0.265,0.265,0.265,1)
-  -- Text
-  self.topTitleFrame.text = self.topTitleFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  self.topTitleFrame.text:SetWidth(200)
-  self.topTitleFrame.text:SetJustifyH("CENTER")
-  self.topTitleFrame.text:SetText("|cFF006699Assigner|r 1.0")
-  self.topTitleFrame.text:SetPoint("CENTER", self.topTitleFrame, "CENTER", 0, 1.5)
-
-  ---------------
-  -- Top Menu Bar
-  ---------------
-
-  -- Frame
-  self.topMenuBarFrame = CreateFrame("Frame", nil, self.mainFrame)
-  self.topMenuBarFrame:SetWidth(420)
-  self.topMenuBarFrame:SetHeight(105)
-  self.mainFrame:SetFrameStrata("BACKGROUND")
-  self.topMenuBarFrame:SetPoint("TOPLEFT", 10, -10)
-  self.topMenuBarFrame:SetBackdrop({ bgFile = "Interface\\ChatFrame\\ChatFrameBackground",})
-  self.topMenuBarFrame:SetBackdropColor(33/255, 37/255, 43/255)
-
-  self.shortAnnounceCheckBox = self:CreateCheckButtonWithText(self.topMenuBarFrame, {x=0, y=0}, "Short Announce", self.OnShortAnnounceCheckBox)
+	self.frame.pages = {}
+	self.frame.scrollFrames = {}
+  self.frame.sliders = {}
   
-  -- reset assigns
-  self.resetAssigns = self:CreateButton(self.topMenuBarFrame, {x=10, y=-38}, {w=140, h=30}, "Reset Assigns", Assigner.ui.ResetAssigns)
+  self.pageNames = { "Tank", "Stun/Kick/Pummel" }
 
-  -- send button
-  self.sendButton = self:CreateButton(self.topMenuBarFrame, {x=10, y=-70}, {w=140, h=30}, "Send Assigment", Assigner.PostAssignement)
+  for i,name in ipairs(self.pageNames) do
+		self.frame.scrollFrames[i] = CreateFrame("ScrollFrame", nil, self.frame)
+		self.frame.scrollFrames[i]:SetHeight(350)
+		self.frame.scrollFrames[i]:SetWidth(500)
+		self.frame.scrollFrames[i].id = i
+
+		self.frame.scrollFrames[i]:SetPoint("BOTTOMRIGHT", -30, 10)
+		self.frame.scrollFrames[i]:Hide()
+		self.frame.scrollFrames[i]:EnableMouseWheel(true)
+		self.frame.scrollFrames[i]:SetBackdrop(Assigner.constants.backdrop)
+		self.frame.scrollFrames[i]:SetBackdropColor(33/255, 37/255, 77/255,1)
+		self.frame.scrollFrames[i]:SetScript("OnMouseWheel", function()
+																		local maxScroll = this:GetVerticalScrollRange()
+																		local Scroll = this:GetVerticalScroll()
+																		local toScroll = (Scroll - (20*arg1))
+																		if toScroll < 0 then
+																			this:SetVerticalScroll(0)
+																		elseif toScroll > maxScroll then
+																			this:SetVerticalScroll(maxScroll)
+																		else
+																			this:SetVerticalScroll(toScroll)
+																		end
+																		local script = self.frame.sliders[this.id]:GetScript("OnValueChanged")
+																		self.frame.sliders[this.id]:SetScript("OnValueChanged", nil)
+																		self.frame.sliders[this.id]:SetValue(toScroll/maxScroll)
+																		self.frame.sliders[this.id]:SetScript("OnValueChanged", script)
+																	end)
+
+		self.frame.sliders[i] = CreateFrame("Slider", nil, self.frame.scrollFrames[i])
+		self.frame.sliders[i]:SetOrientation("VERTICAL")
+		self.frame.sliders[i]:SetPoint("TOPLEFT", self.frame.scrollFrames[i], "TOPRIGHT", 5, 0)
+		self.frame.sliders[i]:SetBackdrop(Assigner.constants.backdrop)
+		self.frame.sliders[i]:SetBackdropColor(0,0,0,0.5)
+		self.frame.sliders[i].thumbtexture = self.frame.sliders[i]:CreateTexture()
+		self.frame.sliders[i].thumbtexture:SetTexture(0.18,0.27,0.5,1)
+		self.frame.sliders[i]:SetThumbTexture(self.frame.sliders[i].thumbtexture)
+		self.frame.sliders[i]:SetMinMaxValues(0,1)
+		self.frame.sliders[i]:SetHeight(348)
+		self.frame.sliders[i]:SetWidth(15)
+		self.frame.sliders[i]:SetValue(0)
+		self.frame.sliders[i].ScrollFrame = self.frame.scrollFrames[i]
+		self.frame.sliders[i]:SetScript("OnValueChanged", function() this.ScrollFrame:SetVerticalScroll(this.ScrollFrame:GetVerticalScrollRange()*this:GetValue()) end  )
+
+		self.frame.pages[i] = CreateFrame("Frame", name.." Page", self.frame.scrollFrames[i])
+		self.frame.pages[i]:SetHeight(1)
+		self.frame.pages[i]:SetWidth(500)
+
+		self.frame.pages[i].name = self.frame.pages[i]:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		self.frame.pages[i].name:SetPoint("TOP", self.frame.pages[i], "TOP", 0, -10)
+		self.frame.pages[i].name:SetHeight(30)
+		self.frame.pages[i].name:SetJustifyH("LEFT")
+		self.frame.pages[i].name:SetTextColor(1,1,1)
+    self.frame.pages[i].name:SetText(name)
+
+		self.frame.scrollFrames[i]:SetScrollChild(self.frame.pages[i])
+
+  end
+  
+  self.frame.scrollFrames[Assigner.db.profile.CurrentFrameID]:Show()
+  
+  self.frame.tankAssigmentButton = self:CreateOptionsButton(1, "TankAssignementButton",	self.pageNames[1]	, self.frame, {anchor="TOPLEFT", x=20, y=-60})
+	self.frame.stunAssigmentButton = self:CreateOptionsButton(2, "StunAssignementButton",	 self.pageNames[2] , self.frame.tankAssigmentButton, {anchor="BOTTOMLEFT",x=0, y=-2})
+	
+  local page = 2
+
+  -- Frame
+  self.frame.pages[page].topMenuBarFrame = CreateFrame("Frame", nil, self.frame.pages[page])
+  self.frame.pages[page].topMenuBarFrame:SetWidth(420)
+  self.frame.pages[page].topMenuBarFrame:SetHeight(210)
+  self.frame.pages[page].topMenuBarFrame:SetPoint("TOPLEFT", 10, -50)
+
+  self.frame.pages[page].shortAnnounceCheckBox = self:CreateCheckButtonWithText(self.frame.pages[page].topMenuBarFrame, "ShortAnnounceCheckBox" , {x=85, y=0}, "Short Announce", function () Assigner.db.profile.ShortStringMode = this:GetChecked() end)
+  
+  self.frame.pages[page].resetAssigns = self:CreateButton(self.frame.pages[page].topMenuBarFrame, {x=70, y=-38}, {w=140, h=30}, "Reset Assigns", Assigner.ui.ResetAssigns)
+  self.frame.pages[page].sendButton = self:CreateButton(self.frame.pages[page].topMenuBarFrame, {x=70, y=-70}, {w=140, h=30}, "Send Assigment", Assigner.PostAssignement)
 
   -- channel type
-  self:CreateNormalText(self.topMenuBarFrame, {x=310, y=-7}, "Channel"):SetFont("Fonts\\FRIZQT__.TTF", 15)
+  self:CreateNormalText(self.frame.pages[page].topMenuBarFrame, {x=310, y=-2}, "Channel"):SetFont("Fonts\\FRIZQT__.TTF", 15)
+  self.frame.pages[page].channelTypeGroup = {}
+  self.frame.pages[page].channelTypeRaidCheckBox = self:CreateCheckButtonWithText(self.frame.pages[page].topMenuBarFrame, "ChannelTypeRaidCheckBox" , {x=280, y=-23}, "Raid", self.OnChannelTypeCheckBoxClicked)
+  self.frame.pages[page].channelTypeRaidCheckBox.id = 1
+  self.frame.pages[page].channelTypeRaidWarningCheckBox = self:CreateCheckButtonWithText(self.frame.pages[page].topMenuBarFrame, "ChannelTypeRaidWarningCheckBox" , {x=280, y=-48}, "Raid Warning", self.OnChannelTypeCheckBoxClicked)
+  self.frame.pages[page].channelTypeRaidWarningCheckBox.id = 2
+  self.frame.pages[page].channelTypeCustomCheckBox = self:CreateCheckButtonWithText(self.frame.pages[page].topMenuBarFrame, "ChannelTypeCustomCheckBox", {x=280, y=-74}, "Custom Channel", self.OnChannelTypeCheckBoxClicked)
+  self.frame.pages[page].channelTypeCustomCheckBox.id = 3
 
-  self.channelTypeRaidCheckBox = self:CreateCheckButtonWithText(self.topMenuBarFrame, {x=245, y=-23}, "Raid", self.OnChannelTypeRaidCheckBoxClicked)
-  self.channelTypeRaidWarningCheckBox = self:CreateCheckButtonWithText(self.topMenuBarFrame, {x=245, y=-48}, "Raid Warning", self.OnChannelTypeRaidWarningCheckBoxclicked)
-  self.channelTypeCustomCheckBox = self:CreateCheckButtonWithText(self.topMenuBarFrame, {x=245, y=-74}, "Custom Channel", self.OnChannelTypeCustomCheckBoxClicked)
-  
-  self.channelEditBox = self:CreateEditBox(self.topMenuBarFrame, {x=400,y=-75}, {w=15,h=30})
-  self.channelEditBox:SetMaxLetters(1)
-  self.channelEditBox:SetScript("OnTextChanged", self.OnChannelEditBoxTextChanged)
-  
-  ---------------
-  ---- Middle Frame
-  ---------------
+  self.frame.pages[page].channelTypeGroup["ChannelTypeRaidCheckBox"] = self.frame.pages[page].channelTypeRaidCheckBox
+  self.frame.pages[page].channelTypeGroup["ChannelTypeRaidWarningCheckBox"] = self.frame.pages[page].channelTypeRaidWarningCheckBox
+  self.frame.pages[page].channelTypeGroup["ChannelTypeCustomCheckBox"] = self.frame.pages[page].channelTypeCustomCheckBox
 
-  self.middleFrame = CreateFrame("Frame", nil, self.mainFrame)
-  self.middleFrame:SetFrameStrata("BACKGROUND")
-  self.middleFrame:SetWidth(420)
-  self.middleFrame:SetHeight(387)
-  self.middleFrame:SetPoint("TOPLEFT", 10, -120)
-  --self.middleFrame:SetBackdrop({ bgFile = "Interface\\ChatFrame\\ChatFrameBackground",})
-  --self.middleFrame:SetBackdropColor(33/255, 37/255, 77/255)
+  self.frame.pages[page].channelEditBox = self:CreateEditBox(self.frame.pages[page].topMenuBarFrame, {x=400,y=-75}, {w=15,h=30})
+  self.frame.pages[page].channelEditBox:SetMaxLetters(1)
+  self.frame.pages[page].channelEditBox:SetScript("OnEnterPressed", function()
+    local number = tonumber(this:GetText())
+    if number then Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].CustomChannel = number
+    else this:SetText(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].CustomChannel)
+    end
+  end)
 
   local iconFrame
-  iconFrame = CreateFrame("Frame", nil, self.middleFrame)
-  iconFrame:SetFrameStrata("Medium")
+  iconFrame = CreateFrame("Frame", nil, self.frame.pages[page].topMenuBarFrame)
   iconFrame:SetWidth(30)
   iconFrame:SetHeight(90)
-  iconFrame:SetPoint("TOPLEFT", 30, -8)
+  iconFrame:SetPoint("BOTTOMLEFT", 0, 0)
 
-  -- Row 1 (Skull)
-  self:CreateIconTexture(iconFrame, {x=0,y=0}, {left=0.75,right=1,top=0.25,bottom=0.5})
-  self:CreateNormalText(self.middleFrame, {x=140,y=-2}, "Player 1")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 8, 1, {x=80,y=-16})
-  self:CreateNormalText(self.middleFrame, {x=300,y=-2}, "Player 2")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 8, 2, {x=240,y=-16})
+  local prefix = Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Prefix
+
+  self:CreateIconTexture(iconFrame, {x=50,y=0}, {left=0.75,right=1,top=0.25,bottom=0.5})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 8, 1, {x=80,y=0})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 8, 2, {x=240,y=0})
 
   -- Row 2 (Cross)
-  self:CreateIconTexture(iconFrame, {x=0,y=-48}, {left=0.5,right=0.75,top=0.25,bottom=0.5})
-  self:CreateNormalText(self.middleFrame, {x=140,y=-50}, "Player 1")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 7, 1, {x=80,y=-64})
-  self:CreateNormalText(self.middleFrame, {x=300,y=-50}, "Player 2")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 7, 2, {x=240,y=-64})
+  self:CreateIconTexture(iconFrame, {x=50,y=-48}, {left=0.5,right=0.75,top=0.25,bottom=0.5})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 7, 1, {x=80,y=-48})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 7, 2, {x=240,y=-48})
 
   -- Row 3 (Square)
-  self:CreateIconTexture(iconFrame, {x=0,y=-96}, {left=0.25,right=0.5,top=0.25,bottom=0.5})
-  self:CreateNormalText(self.middleFrame, {x=140,y=-98}, "Player 1")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 6, 1, {x=80,y=-112})
-  self:CreateNormalText(self.middleFrame, {x=300,y=-98}, "Player 2")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 6, 2, {x=240,y=-112})
+  self:CreateIconTexture(iconFrame, {x=50,y=-96}, {left=0.25,right=0.5,top=0.25,bottom=0.5})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 6, 1, {x=80,y=-96})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 6, 2, {x=240,y=-96})
 
   -- Row 4 (Triangle)
-  self:CreateIconTexture(iconFrame, {x=0,y=-144}, {left=0.75,right=1,top=0,bottom=0.25})
-  self:CreateNormalText(self.middleFrame, {x=140,y=-146}, "Player 1")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 4, 1, {x=80,y=-160})
-  self:CreateNormalText(self.middleFrame, {x=300,y=-146}, "Player 2")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 4, 2, {x=240,y=-160})
+  self:CreateIconTexture(iconFrame, {x=50,y=-144}, {left=0.75,right=1,top=0,bottom=0.25})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 4, 1, {x=80,y=-144})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 4, 2, {x=240,y=-144})
 
   -- Row 4 (Diamond)
-  self:CreateIconTexture(iconFrame, {x=0,y=-192}, {left=0.5,right=0.75,top=0,bottom=0.25})
-  self:CreateNormalText(self.middleFrame, {x=140,y=-194}, "Player 1")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 3, 1, {x=80,y=-208})
-  self:CreateNormalText(self.middleFrame, {x=300,y=-194}, "Player 2")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 3, 2, {x=240,y=-208})
+  self:CreateIconTexture(iconFrame, {x=50,y=-192}, {left=0.5,right=0.75,top=0,bottom=0.25})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 3, 1, {x=80,y=-192})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 3, 2, {x=240,y=-192})
 
   -- Row 5 (Moon)
-  self:CreateIconTexture(iconFrame, {x=0,y=-240}, {left=0,right=0.25,top=0.25,bottom=0.5})
-  self:CreateNormalText(self.middleFrame, {x=140,y=-242}, "Player 1")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 5, 1, {x=80,y=-256})
-  self:CreateNormalText(self.middleFrame, {x=300,y=-242}, "Player 2")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 5, 2, {x=240,y=-256})
+  self:CreateIconTexture(iconFrame, {x=50,y=-240}, {left=0,right=0.25,top=0.25,bottom=0.5})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 5, 1, {x=80,y=-240})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 5, 2, {x=240,y=-240})
 
   -- Row 5 (Star)
-  self:CreateIconTexture(iconFrame, {x=0,y=-288}, {left=0,right=0.25,top=0,bottom=0.25})
-  self:CreateNormalText(self.middleFrame, {x=140,y=-290}, "Player 1")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 1, 1, {x=80,y=-304})
-  self:CreateNormalText(self.middleFrame, {x=300,y=-290}, "Player 2")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 1, 2, {x=240,y=-304})
+  self:CreateIconTexture(iconFrame, {x=50,y=-288}, {left=0,right=0.25,top=0,bottom=0.25})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 1, 1, {x=80,y=-288})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 1, 2, {x=240,y=-288})
 
   -- Row 5 (Circle)
-  self:CreateIconTexture(iconFrame, {x=0,y=-336}, {left=0.25,right=0.5,top=0,bottom=0.25})
-  self:CreateNormalText(self.middleFrame, {x=140,y=-338}, "Player 1")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 2, 1, {x=80,y=-352})
-  self:CreateNormalText(self.middleFrame, {x=300,y=-338}, "Player 2")
-  self:CreateDropDownPlayerMenu(self.middleFrame, 2, 2, {x=240,y=-352})
+  self:CreateIconTexture(iconFrame, {x=50,y=-336}, {left=0.25,right=0.5,top=0,bottom=0.25})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 2, 1, {x=80,y=-336})
+  self:CreateDropDownPlayerMenu(iconFrame, prefix, 2, 2, {x=240,y=-336})
 
   ---------------
   ---- Close Button
   ---------------
   
-  self.mainFrame.closeButton = CreateFrame("Button", "YourCloseButtonName", self.mainFrame, "UIPanelCloseButton")
-  self.mainFrame.closeButton:SetPoint("TOPRIGHT", self.mainFrame, "TOPRIGHT", 5, 5)
-  self.mainFrame.closeButton:SetScript("OnClick", function() self.mainFrame:Hide() end)
+  self.frame.closeButton = CreateFrame("Button", "YourCloseButtonName", self.frame, "UIPanelCloseButton")
+  self.frame.closeButton:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 15, 15)
+  self.frame.closeButton:SetScript("OnClick", function() self.frame:Hide() end)
 
-  self.mainFrame:Hide()
+  self.frame:Hide()
 end
 
 function Assigner.ui:PopulateUi()
-  self.shortAnnounceCheckBox.checkBox:SetChecked(Assigner.db.profile.ShortStringMode)
+  local page = 2
+  self.frame.pages[page].shortAnnounceCheckBox:SetChecked(Assigner.db.profile.Pages[page].ShortStringMode)
   -----------
   -- Channel Type
   ----------- 
-  if(Assigner.db.profile.ChannelType == 3) then 
-    self.channelTypeCustomCheckBox.checkBox:SetChecked(true)
+  if(Assigner.db.profile.Pages[page].ChannelType == 3) then  self.frame.pages[page].channelTypeCustomCheckBox:SetChecked(true)
   else
-    self.channelEditBox:Hide()
-    if (Assigner.db.profile.ChannelType == 2) then self.channelTypeRaidWarningCheckBox.checkBox:SetChecked(true)
-    else self.channelTypeRaidCheckBox.checkBox:SetChecked(true)
+    self.frame.pages[page].channelEditBox:Hide()
+    if (Assigner.db.profile.Pages[page].ChannelType == 2) then self.frame.pages[page].channelTypeRaidWarningCheckBox:SetChecked(true)
+    else self.frame.pages[page].channelTypeRaidCheckBox:SetChecked(true)
     end
   end
-  self.channelEditBox:SetText(Assigner.db.profile.CustomChannel)
-
+  self.frame.pages[page].channelEditBox:SetText(Assigner.db.profile.Pages[page].CustomChannel)
   ------------
   -- Assigns
   ------------
 
-  for key, value in Assigner.db.profile.Assigns do
+  for key, value in Assigner.db.profile.Pages[page].Assigns.Data do
     local obj = getglobal(key.."Text")
     if(obj) then
       obj:SetText(value)
+      --obj:SetFont("Fonts\\FRIZQT__.TTF", 9)
     end
   end
 end
 
 function Assigner.ui:ResetAssigns()
-  Assigner.db.profile.Assigns = defaults.Assigns
+  Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns = defaults.pages[Assigner.db.profile.CurrentFrameID].Assigns
 
-  for key, value in Assigner.db.profile.Assigns do
+  for key, value in Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns do
     local obj = getglobal(key.."Text")
     if(obj) then
       obj:SetText(value)
@@ -208,123 +225,25 @@ function Assigner.ui:ResetAssigns()
   end
 end
 
-function Assigner.ui:CreateNormalText(parent, pos, text)
-  local textFrame = parent:CreateFontString(parent, "ARTWORK", "GameFontHighlight")
-  textFrame:SetPoint("TOPLEFT", pos.x, pos.y)
-  textFrame:SetText(text)
-  return textFrame
+function Assigner.ui:OnPageSwitch()
+	Assigner.ui.frame.scrollFrames[Assigner.db.profile.CurrentFrameID]:Hide()
+	Assigner.ui.frame.scrollFrames[this.id]:Show()
+	Assigner.db.profile.CurrentFrameID = this.id
 end
 
-function Assigner.ui:CreateIconTexture(parent, pos, textCoords)
-  local texture = parent:CreateTexture("Texture", "Background")
-  texture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
-  texture:SetPoint("TOPLEFT", pos.x, pos.y) -- this is relative to the frame created above, unless an anchor frame is given
-  texture:SetWidth(30)
-  texture:SetHeight(30)
-  texture:SetTexCoord(textCoords.left, textCoords.right, textCoords.top, textCoords.bottom)
-  return texture
-end
+function Assigner.ui:OnChannelTypeCheckBoxClicked()
+  local currentPage = Assigner.ui.frame.pages[Assigner.db.profile.CurrentFrameID]
+  if this:GetChecked() then
+    for _,v in pairs(currentPage.channelTypeGroup) do
+      if (v.id ~= this.id) then v:SetChecked(false)
+      end
+    end
 
-function Assigner.ui:CreateCheckButtonWithText(parent, pos, displayname, onClick)
-  if( not pos.anchor) then pos.anchor = "TOPLEFT" end
-  -- Container Frame
-  local container = CreateFrame("Frame", nil, parent)
-  container:SetPoint(pos.anchor, pos.x, pos.y)
-  -- Text Frame
-	container.text = container:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  container.text:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
-  container.text:SetWidth(120)
-  container.text:SetJustifyH("RIGHT")
-  container.text:SetJustifyV("CENTER")
-  container.text:SetText(displayname)
-  -- CheckBox Frame
-  container.checkBox = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
-  container.checkBox:SetFrameStrata("LOW")
-  container.checkBox:SetPoint("TOPRIGHT", container.text, "TOPRIGHT", container.checkBox:GetWidth(), -1);
-  container.checkBox:SetScript("OnClick", onClick)
+    if this.id == 3 then currentPage.channelEditBox:Show()
+    else currentPage.channelEditBox:Hide()
+    end
 
-  function container:Resize()
-    self.text:SetHeight(self.checkBox:GetHeight())
-    self:SetWidth(container.text:GetWidth() + self.checkBox:GetWidth())
-    self:SetHeight(40)  
-  end
-
-  container:Resize()
-
-	return container;
-end
-
-function Assigner.ui:CreateButton(parent, pos, size, displayText, onClick)
-  if( not pos.anchor) then pos.anchor = "TOPLEFT" end
-  local button = CreateFrame("Button",nil, parent ,"UIPanelButtonTemplate")
-  button:SetPoint(pos.anchor,pos.x,pos.y)
-  button:SetFrameStrata("MEDIUM")
-  button:SetWidth(size.w)
-  button:SetHeight(size.h)
-  button:SetText(displayText)
-  button:SetScript("OnClick", onClick)
-  return button
-end
-
-function Assigner.ui:CreateEditBox(parent, pos, size, displayText)
-  if( not pos.anchor) then pos.anchor = "TOPLEFT" end
-  local editBox = CreateFrame("EditBox", nil, parent ,"InputBoxTemplate")
-	editBox:SetPoint(pos.anchor,pos.x,pos.y)
-	editBox:SetWidth(size.w)
-	editBox:SetHeight(size.h)
-	editBox:SetAutoFocus(false)
-  editBox:SetFrameStrata("MEDIUM")
-  return editBox
-end
-
-function Assigner.ui:OnShortAnnounceCheckBox()
-  if(Assigner.ui.shortAnnounceCheckBox.checkBox:GetChecked()) then
-    Assigner.db.profile.ShortStringMode = true
-  else
-    Assigner.db.profile.ShortStringMode = false
-  end
-end
-
-function Assigner.ui:OnChannelTypeRaidCheckBoxClicked()
-  if(Assigner.ui.channelTypeRaidCheckBox.checkBox:GetChecked()) then
-    Assigner.db.profile.ChannelType = 1
-    Assigner.ui.channelTypeRaidWarningCheckBox.checkBox:SetChecked(false)
-    Assigner.ui.channelTypeCustomCheckBox.checkBox:SetChecked(false)
-    Assigner.ui.channelEditBox:Hide()
-  else
-    Assigner.ui.channelTypeRaidCheckBox.checkBox:SetChecked(true)
-  end
-end
-
-function Assigner.ui:OnChannelTypeRaidWarningCheckBoxclicked()
-  if(Assigner.ui.channelTypeRaidWarningCheckBox.checkBox:GetChecked()) then
-    Assigner.db.profile.ChannelType = 2
-    Assigner.ui.channelTypeRaidCheckBox.checkBox:SetChecked(false)
-    Assigner.ui.channelTypeCustomCheckBox.checkBox:SetChecked(false)
-    Assigner.ui.channelEditBox:Hide()
-  else
-    Assigner.ui.channelTypeRaidWarningCheckBox.checkBox:SetChecked(true)
-  end
-end
-
-function Assigner.ui:OnChannelTypeCustomCheckBoxClicked()
-  if(Assigner.ui.channelTypeCustomCheckBox.checkBox:GetChecked()) then
-    Assigner.db.profile.ChannelType = 3
-    Assigner.ui.channelTypeRaidCheckBox.checkBox:SetChecked(false)
-    Assigner.ui.channelTypeRaidWarningCheckBox.checkBox:SetChecked(false)
-    Assigner.ui.channelEditBox:Show()
-  else
-    Assigner.ui.channelTypeCustomCheckBox.checkBox:SetChecked(true)
-  end
-end
-
-function Assigner.ui:OnChannelEditBoxTextChanged()
-  if(Assigner.ui.channelEditBox:GetText() == "") then return end
-
-  local channel = tonumber(Assigner.ui.channelEditBox:GetText())
-  if channel then
-    Assigner.db.profile.CustomChannel = channel
-  else
-    Assigner.ui.channelEditBox:SetText(Assigner.db.profile.CustomChannel)
+    Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType = this.id
+  else this:SetChecked(true) -- Disable Self Uncheck
   end
 end

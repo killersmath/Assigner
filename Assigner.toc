@@ -27,4 +27,5 @@ Libs\FuBarPlugin-2.0\FuBarPlugin-2.0.lua
 core.lua
 
 ui.lua
+ui_utils.lua
 ui_dropdown.lua

@@ -1,33 +1,44 @@
 local globalDropDownID
 local players = {}
 
-function Assigner.ui:CreateDropDownPlayerMenu(parent, mark, order, pos) 
+function Assigner.ui:CreateDropDownPlayerMenu(parent, prefix, mark, order, pos) 
   if(not pos.anchor) then pos.anchor = "TOPLEFT" end
-  local dropDown = CreateFrame("Button", "ASDropDownPlayer"..mark..order, parent, "UIDropDownMenuTemplate")
+  local dropDown = CreateFrame("Button", prefix..mark..order, parent, "UIDropDownMenuTemplate")
   dropDown:SetPoint(pos.anchor, pos.x, pos.y)
+
+  UIDropDownMenu_SetWidth(120, dropDown)
   getglobal(dropDown:GetName().."Button"):SetScript("OnClick", function() 
     local dropDownID = getglobal(dropDown:GetName())
-		Assigner.ui:DropDownOnClick(dropDownID)
+		Assigner.ui:DropDownPlayerOnClick(dropDownID)
 		ToggleDropDownMenu(); -- inherit UIDropDownMenuTemplate functions
     end)
   return dropDown
 end
 
-function Assigner.ui:PopulateDropdown()
+-- Initialize a specific dropdown
+function Assigner.ui:DropDownPlayerOnClick(dropDownID)
+  globalDropDownID = dropDownID -- feed global
+  self:PopulatePlayers()
+	UIDropDownMenu_Initialize(dropDownID, self.PopulateDropdownPlayer)
+end
 
+function Assigner.ui:PopulateDropdownPlayer()
   local info = {}
   -- Default Option
   info.text = "NONE"
   info.checked = false
+  info.checkable = false
   info.func = function() 
     UIDropDownMenu_SetSelectedID(globalDropDownID, this:GetID())
-    Assigner.db.profile.Assigns[globalDropDownID:GetName()] = getglobal(globalDropDownID:GetName().."Text"):GetText()
+    Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[globalDropDownID:GetName()] = getglobal(globalDropDownID:GetName().."Text"):GetText()
    end
   UIDropDownMenu_AddButton(info);
   -- Players options
   for i=1,table.getn(players) do
     info.text = players[i].name
+    info.value = players[i].name
     info.checked = false
+    info.checkable = false
     local color = Assigner.ui:GetClassColor(players[i].class)
     if(color) then
       info.textR = color.r
@@ -36,17 +47,10 @@ function Assigner.ui:PopulateDropdown()
     end
     info.func = function() 
       UIDropDownMenu_SetSelectedID(globalDropDownID, this:GetID())
-      Assigner.db.profile.Assigns[globalDropDownID:GetName()] = getglobal(globalDropDownID:GetName().."Text"):GetText()
+      Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[globalDropDownID:GetName()] = getglobal(globalDropDownID:GetName().."Text"):GetText()
      end
     UIDropDownMenu_AddButton(info);
   end
-end
-
--- Initialize a specific dropdown
-function Assigner.ui:DropDownOnClick(dropDownID)
-  globalDropDownID = dropDownID -- feed global
-  self:PopulatePlayers()
-	UIDropDownMenu_Initialize(dropDownID, self.PopulateDropdown)
 end
 
 function Assigner.ui:PopulatePlayers()
