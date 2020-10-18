@@ -227,46 +227,49 @@ function Assigner:SetActiveStatusOption(newStatus)
   self:UpdateText()
 end
 
-function Assigner:GetStunAssignementString(markID)
-  local message = ""
-  local firstPrint = true
+function Assigner:BuildAssignementRowString(row, firstString, j, message, firstPrint)
+  j = j or 1
+  message = message or ""
 
-  if(Assigner.db.profile.Pages[2].Players[markID][1] ~= "NONE" or Assigner.db.profile.Pages[2].Players[markID][2] ~= "NONE") then
-    if(Assigner.db.profile.Pages[2].ShortStringMode or Assigner.db.profile.Pages[2].ChannelType == 2) then
-      if(not firstPrint) then
-        message = message .. "; "
-      else
-        firstPrint = false
-      end
-    else
-      if(not firstPrint) then
-        message = message .. "\n "
-      else
-        firstPrint = false
-      end
-    end
-
-    message = message .. "("..Assigner.constants.RAID_TARGETS_NUMBERS[markID].."):"
-    if(Assigner.db.profile.Pages[2].Players[markID][1] ~= "NONE") then
-      Assigner:Print(Assigner.db.profile.Pages[2].Players, markID)
-      message = message .. " " .. Assigner.db.profile.Pages[2].Players[markID][1]
-        if(Assigner.db.profile.Pages[2].Players[markID][2] ~= "NONE") then
-          message = message .. ", " .. Assigner.db.profile.Pages[2].Players[markID][2]
-        end
-    elseif(Assigner.db.profile.Pages[2].Players[markID][2] ~= "NONE") then
-      message = message.." " .. Assigner.db.profile.Pages[2].Players[markID][2]
-    end
+  if(firstPrint == nil) then
+    firstPrint = true
   end
-  return message
+
+  if(not Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Players[row][j]) then
+    return message, firstString
+  end
+
+  if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Players[row][j] ~= "NONE") then
+    if(not firstPrint) then
+      message = message .. ", "
+    else
+      if (not firstString) then
+        if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ShortStringMode or Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType == 2) then
+          message = message .. "; "
+        else
+          message = message .. "\n"
+        end
+      else
+        firstString = false
+      end
+      firstPrint = false
+      message = message .. "("..Assigner.constants.RAID_TARGETS_NUMBERS[row].."): "
+    end
+    message = message .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Players[row][j]
+  end
+
+  return Assigner:BuildAssignementRowString(row, firstString, j + 1, message, firstPrint)
 end
 
 function Assigner:HasAssignInPage(page)
   local found = false
 
-  for _, value in Assigner.db.profile.Pages[page].Players do
-    if (value ~= "NONE") then
-      found = true
-      break
+  for i, i_value in Assigner.db.profile.Pages[page].Players do
+    for j, j_value in Assigner.db.profile.Pages[page].Players[i] do
+      if (j_value ~= "NONE") then
+        found = true
+        break
+      end
     end
   end
 
@@ -282,15 +285,27 @@ function Assigner:GetAssignementString()
       message = "=-------- " .. Assigner.ui.frame.pages[currentPageID].name:GetText()..  "--------=\n"
     end
 
+    local assignement
+    firstString = true
+
     if (currentPageID == 2) then
-      message = message .. Assigner:GetStunAssignementString(8)
-      message = message .. Assigner:GetStunAssignementString(7)
-      message = message .. Assigner:GetStunAssignementString(6)
-      message = message .. Assigner:GetStunAssignementString(4)
-      message = message .. Assigner:GetStunAssignementString(3)
-      message = message .. Assigner:GetStunAssignementString(5)
-      message = message .. Assigner:GetStunAssignementString(1)
-      message = message .. Assigner:GetStunAssignementString(2)
+      assignement, firstString = Assigner:BuildAssignementRowString(8, firstString)
+      message = message .. assignement
+      assignement, firstString = Assigner:BuildAssignementRowString(7, firstString)
+      message = message .. assignement
+      assignement, firstString = Assigner:BuildAssignementRowString(6, firstString)
+      message = message .. assignement
+      assignement, firstString = Assigner:BuildAssignementRowString(4, firstString)
+      message = message .. assignement
+      assignement, firstString = Assigner:BuildAssignementRowString(3, firstString)
+      message = message .. assignement
+      assignement, firstString = Assigner:BuildAssignementRowString(5, firstString)
+      message = message .. assignement
+      assignement, firstString = Assigner:BuildAssignementRowString(1, firstString)
+      message = message .. assignement
+      assignement, firstString = Assigner:BuildAssignementRowString(2, firstString)
+      message = message .. assignement
+      --]]
     else 
       self:Print("Wrong Page")
     end
