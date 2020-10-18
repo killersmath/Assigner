@@ -9,51 +9,114 @@ defaults = {
   Active = true,
   CurrentFrameID = 1,
   Pages = {
+    [1] = {
+      ShortStringMode = false,
+      ChannelType = 1,
+      CustomChannel = 1,
+      Players = {
+      },
+    },
     [2] = {
       ShortStringMode = false,
       ChannelType = 1,
       CustomChannel = 1,
-      Assigns = {
-        Prefix = "ASDropDownPlayerPage2",
-        Data = {
-          -- Skull
-          ["ASDropDownPlayerPage281"] = "NONE",
-          ["ASDropDownPlayerPage282"] = "NONE",
-          -- X
-          ["ASDropDownPlayerPage271"] = "NONE",
-          ["ASDropDownPlayerPage272"] = "NONE",
-          -- Square
-          ["ASDropDownPlayerPage261"] = "NONE",
-          ["ASDropDownPlayerPage262"] = "NONE",
-          -- Triangle
-          ["ASDropDownPlayerPage241"] = "NONE",
-          ["ASDropDownPlayerPage242"] = "NONE",
-          -- Diamond
-          ["ASDropDownPlayerPage231"] = "NONE",
-          ["ASDropDownPlayerPage232"] = "NONE",
-          -- Moon
-          ["ASDropDownPlayerPage251"] = "NONE",
-          ["ASDropDownPlayerPage252"] = "NONE",
-          -- Circle
-          ["ASDropDownPlayerPage221"] = "NONE",
-          ["ASDropDownPlayerPage222"] = "NONE",
-          -- Star
-          ["ASDropDownPlayerPage211"] = "NONE",
-          ["ASDropDownPlayerPage212"] = "NONE",
-        }
-      }
-    }
-  }
+      Players = {
+        -- Skull  (8)
+        [8] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- X
+        [7] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Square 
+        [6] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Triangle
+        [4] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Diamond
+        [3] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Moon
+        [5] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Circle
+        [2] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Star
+        [1] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+      },
+    },
+    [3] = {
+      ShortStringMode = false,
+      ChannelType = 1,
+      CustomChannel = 1,
+      Players = {
+      },
+    },
+  },
 }
 
 Assigner.constants = {
-	backdrop = {
+	BACKDROP = {
 		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		tile = true,
 		tileSize = 16,
 		insets = {left = -1.5, right = -1.5, top = -1.5, bottom = -1.5},
   },
-  iconTable = {
+  FONTS = {
+    ["Lobster"]       = "Interface\\AddOns\\Assigner\\Media\\Fonts\\Lobster.ttf",
+    ["Righteous"]       = "Interface\\AddOns\\Assigner\\Media\\Fonts\\Righteous.ttf",
+  },
+  CLASS_COLORS = {
+    ["WARRIOR"]       = {0.78, 0.60, 0.43},
+    ["MAGE"]          = {0.41, 0.80, 0.94},
+    ["ROGUE"]         = {1.00, 0.96, 0.41},
+    ["DRUID"]         = {1.00, 0.49, 0.04},
+    ["HUNTER"]        = {0.67, 0.83, 0.45},
+    ["SHAMAN"]        = {0.96, 0.55, 0.79},
+    ["WARLOCK"]       = {0.58, 0.51, 0.79},
+    ["PRIEST"]        = {1.00, 1.00, 1.00},
+    ["PALADIN"]       = {0.96, 0.55, 0.73},
+  },
+  CLASS_ICON_TCOORDS = {
+		["WARRIOR"]       = {0.0234375, 0.22656250, 0.0234375, 0.2265625},
+		["MAGE"]          = {0.2734375, 0.47656250, 0.0234375, 0.2265625},
+		["ROGUE"]         = {0.5234375, 0.72656250, 0.0234375, 0.2265625},
+		["DRUID"]         = {0.7734375, 0.97265625, 0.0234375, 0.2265625},
+		["HUNTER"]        = {0.0234375, 0.22656250, 0.2734375, 0.4765625},
+		["SHAMAN"]        = {0.2734375, 0.47656250, 0.2734375, 0.4765625},
+		["PRIEST"]        = {0.5234375, 0.72656250, 0.2734375, 0.4765625},
+		["WARLOCK"]       = {0.7734375, 0.97265625, 0.2734375, 0.4765625},
+		["PALADIN"]       = {0.0234375, 0.22656250, 0.5234375, 0.7265625},
+  },
+  RAID_TARGETS_TCOORDS = {
+    ["SKULL"]         = {0.75, 1.00, 0.25, 0.50},
+    ["CROSS"]         = {0.50, 0.75, 0.25, 0.50},
+    ["SQUARE"]        = {0.25, 0.50, 0.25, 0.50},
+    ["TRIANGLE"]      = {0.75, 1.00, 0.00, 0.25},
+    ["DIAMOND"]       = {0.50, 0.75, 0.00, 0.25},
+    ["MOON"]          = {0.00, 0.25, 0.25, 0.50},
+    ["STAR"]          = {0.00, 0.25, 0.00, 0.25},
+    ["CIRCLE"]        = {0.25, 0.50, 0.00, 0.25},
+  },
+  RAID_TARGETS_NUMBERS = {
     [1] = "Star",
     [2] = "Circle",
     [3] = "Diamond",
@@ -62,18 +125,7 @@ Assigner.constants = {
     [6] = "Square",
     [7] = "Cross",
     [8] = "Skull",
-  }
-}
-
-local iconTable = {
-  [1] = "Star",
-  [2] = "Circle",
-  [3] = "Diamond",
-  [4] = "Triangle",
-  [5] = "Moon",
-  [6] = "Square",
-  [7] = "Cross",
-  [8] = "Skull",
+  },
 }
 
 local options  = {
@@ -96,8 +148,8 @@ local options  = {
       name = "Show", 
       type = "execute",
       desc = "Show Interface",
-        func = function() Assigner.ui.mainFrame:Show() end,
-        disabled = function() return not Assigner.db.profile.Active end,
+      func = function() Assigner.ui.mainFrame:Show() end,
+      disabled = function() return not Assigner.db.profile.Active end,
     },
   },
 }
@@ -159,7 +211,7 @@ function Assigner:OnInitialize()
 
   self:RegisterChatCommand( { "/ass", "/assinger" }, options )
   self.OnMenuRequest = options
-
+  
   self:CreateWindow()
 
   --DEFAULT_CHAT_FRAME:AddMessage(self.addon.title.." v"..self.addon.version.. " has been loaded.")
@@ -175,37 +227,76 @@ function Assigner:SetActiveStatusOption(newStatus)
   self:UpdateText()
 end
 
-function Assigner:GetMarkString(markID)
-  local prefix = Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Prefix
+function Assigner:GetStunAssignementString(markID)
   local message = ""
-  if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"] ~= "NONE" or Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
-    if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ShortStringMode or Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType == 2) then
-      if(not Assigner.firstPrint) then
+  local firstPrint = true
+
+  if(Assigner.db.profile.Pages[2].Players[(markID*10)+1] ~= "NONE" or Assigner.db.profile.Pages[2].Players[(markID*10)+2] ~= "NONE") then
+    if(Assigner.db.profile.Pages[2].ShortStringMode or Assigner.db.profile.Pages[2].ChannelType == 2) then
+      if(not firstPrint) then
         message = message .. "; "
       else
-        Assigner.firstPrint = false
-      end
-      message = message .. "("..iconTable[markID].."):"
-      if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"] ~= "NONE") then
-        message = message .. " " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"]
-          if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
-            message = message .. ", " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"]
-          end
-      elseif(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
-        message = message.." " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"]
+        firstPrint = false
       end
     else
-      message = message .. "\n("..iconTable[markID].."):"
-      if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"] ~= "NONE") then
-        message = message .. " " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."1"]
-        if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
-          message = message .. ", " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"]
-        end
-      elseif(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"] ~= "NONE") then
-        message = message.." " .. Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns.Data[prefix..markID.."2"]
+      if(not firstPrint) then
+        message = message .. "\n "
+      else
+        firstPrint = false
       end
     end
+
+    message = message .. "("..iconTable[markID].."):"
+    if(Assigner.db.profile.Pages[2].Players[(markID*10)+1] ~= "NONE") then
+      message = message .. " " .. Assigner.db.profile.Pages[2].Players[(markID*10)+1]
+        if(Assigner.db.profile.Pages[2].Players[(markID*10)+2] ~= "NONE") then
+          message = message .. ", " .. Assigner.db.profile.Pages[2].Players[(markID*10)+2]
+        end
+    elseif(Assigner.db.profile.Pages[2].Players[(markID*10)+2] ~= "NONE") then
+      message = message.." " .. Assigner.db.profile.Pages[2].Players[(markID*10)+2]
+    end
   end
+  return message
+end
+
+function Assigner:HasAssignInPage()
+  local found = false
+
+  for _, value in Assigner.db.profile.Pages[page].Players do
+    if (value ~= "NONE") then
+      found = true
+      break
+    end
+  end
+
+  return found
+end
+
+function Assigner:GetAssignementString()
+  local currentPageID = Assigner.db.profile.CurrentFrameID
+  local message = ""
+
+  if (self:HasAssignCurrentInPage(currentPageID)) then
+    if (not Assigner.db.profile.Pages[currentPageID].ShortStringMode and Assigner.db.profile.Pages[currentPageID].ChannelType ~= 2) then
+      message = "=-------- " .. Assigner.ui.frame.pages[currentPageID].name:GetText()..  "--------=\n"
+    end
+
+    if (currentPageID == 2) then
+      message = message .. Assigner:GetStunAssignementString(8)
+      message = message .. Assigner:GetStunAssignementString(7)
+      message = message .. Assigner:GetStunAssignementString(6)
+      message = message .. Assigner:GetStunAssignementString(4)
+      message = message .. Assigner:GetStunAssignementString(3)
+      message = message .. Assigner:GetStunAssignementString(5)
+      message = message .. Assigner:GetStunAssignementString(1)
+      message = message .. Assigner:GetStunAssignementString(2)
+    else 
+      self:Print("Wrong Page")
+    end
+  else 
+    message = "No Assigns"
+  end
+
   return message
 end
 
@@ -213,44 +304,7 @@ function Assigner:PostAssignement()
   local currentTime = time()
   if((globalLastAnnounceTime + delayTime/1000) > currentTime) then return end
 
-  local hasAssign = false
-
-  for _, value in Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns do
-    if (value ~= "NONE") then
-      hasAssign = true
-      break
-    end
-  end
-
-  local message = ""
-
-  if (hasAssign) then
-    Assigner.firstPrint = true
-
-    if(not Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ShortStringMode and Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType ~= 2) then
-      message = message .. "=-------- Assignement --------="
-    end
-
-    message = message .. Assigner:GetMarkString(8)
-    message = message .. Assigner:GetMarkString(7)
-    message = message .. Assigner:GetMarkString(6)
-    message = message .. Assigner:GetMarkString(4)
-    message = message .. Assigner:GetMarkString(3)
-    message = message .. Assigner:GetMarkString(5)
-    message = message .. Assigner:GetMarkString(1)
-    message = message .. Assigner:GetMarkString(2)
-  else
-    message = "No Assigns"
-  end
-
-  if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType == 1) then
-    SendChatMessage(message, "RAID")
-  elseif(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType == 2) then
-    SendChatMessage(message, "RAID_WARNING")
-  else
-    SendChatMessage(message, "CHANNEL", nil, Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].CustomChannel)
-  end
-
+  local message = Assigner:GetAssignementString()
+  Assigner:SendMessage(message, Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType, Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].CustomChannel)
   globalLastAnnounceTime = currentTime
 end
-

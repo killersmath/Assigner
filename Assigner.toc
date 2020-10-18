@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: |cFF006699Assigner|r
-## Version: 1.0
-## Notes: Assign the groups
+## Version: 0.1
+## Notes: Assign the Raid Players
 ## Author: Killersmath
 ## DefaultState: enabled
 ## LoadOnDemand: 0
@@ -24,8 +24,10 @@ Libs\Tablet-2.0\Tablet-2.0.lua
 Libs\FuBarPlugin-2.0\FuBarPlugin-2.0.lua
 
 # Main files
-core.lua
 
-ui.lua
-ui_utils.lua
-ui_dropdown.lua
+Core.lua
+Core_Utils.lua
+
+UI.lua
+UI_Utils.lua
+UI_Dropdown.lua
