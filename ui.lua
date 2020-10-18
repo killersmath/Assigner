@@ -255,12 +255,11 @@ function Assigner.ui:SetupUi()
 end
 
 function Assigner.ui:ResetAssigns()
-  Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns = defaults.pages[Assigner.db.profile.CurrentFrameID].Assigns
-
-  for key, value in Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Assigns do
-    local obj = getglobal(key.."Text")
-    if(obj) then
-      obj:SetText(value)
+Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Players = deepcopytable(defaults.Pages[Assigner.db.profile.CurrentFrameID].Players)
+  for i=1,table.getn(Assigner.db.profile.Pages[page].Players) do
+    for j=1,table.getn(Assigner.db.profile.Pages[page].Players[i]) do
+      local dropDownText = getglobal("Page"..page.."DropDownPlayer"..i..j.."Text")
+      dropDownText:SetText(Assigner.db.profile.Pages[page].Players[i][j])
     end
   end
 end
