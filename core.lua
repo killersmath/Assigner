@@ -231,7 +231,7 @@ function Assigner:GetStunAssignementString(markID)
   local message = ""
   local firstPrint = true
 
-  if(Assigner.db.profile.Pages[2].Players[(markID*10)+1] ~= "NONE" or Assigner.db.profile.Pages[2].Players[(markID*10)+2] ~= "NONE") then
+  if(Assigner.db.profile.Pages[2].Players[markID][1] ~= "NONE" or Assigner.db.profile.Pages[2].Players[markID][2] ~= "NONE") then
     if(Assigner.db.profile.Pages[2].ShortStringMode or Assigner.db.profile.Pages[2].ChannelType == 2) then
       if(not firstPrint) then
         message = message .. "; "
@@ -246,20 +246,21 @@ function Assigner:GetStunAssignementString(markID)
       end
     end
 
-    message = message .. "("..iconTable[markID].."):"
-    if(Assigner.db.profile.Pages[2].Players[(markID*10)+1] ~= "NONE") then
-      message = message .. " " .. Assigner.db.profile.Pages[2].Players[(markID*10)+1]
-        if(Assigner.db.profile.Pages[2].Players[(markID*10)+2] ~= "NONE") then
-          message = message .. ", " .. Assigner.db.profile.Pages[2].Players[(markID*10)+2]
+    message = message .. "("..Assigner.constants.RAID_TARGETS_NUMBERS[markID].."):"
+    if(Assigner.db.profile.Pages[2].Players[markID][1] ~= "NONE") then
+      Assigner:Print(Assigner.db.profile.Pages[2].Players, markID)
+      message = message .. " " .. Assigner.db.profile.Pages[2].Players[markID][1]
+        if(Assigner.db.profile.Pages[2].Players[markID][2] ~= "NONE") then
+          message = message .. ", " .. Assigner.db.profile.Pages[2].Players[markID][2]
         end
-    elseif(Assigner.db.profile.Pages[2].Players[(markID*10)+2] ~= "NONE") then
-      message = message.." " .. Assigner.db.profile.Pages[2].Players[(markID*10)+2]
+    elseif(Assigner.db.profile.Pages[2].Players[markID][2] ~= "NONE") then
+      message = message.." " .. Assigner.db.profile.Pages[2].Players[markID][2]
     end
   end
   return message
 end
 
-function Assigner:HasAssignInPage()
+function Assigner:HasAssignInPage(page)
   local found = false
 
   for _, value in Assigner.db.profile.Pages[page].Players do
@@ -276,7 +277,7 @@ function Assigner:GetAssignementString()
   local currentPageID = Assigner.db.profile.CurrentFrameID
   local message = ""
 
-  if (self:HasAssignCurrentInPage(currentPageID)) then
+  if (self:HasAssignInPage(currentPageID)) then
     if (not Assigner.db.profile.Pages[currentPageID].ShortStringMode and Assigner.db.profile.Pages[currentPageID].ChannelType ~= 2) then
       message = "=-------- " .. Assigner.ui.frame.pages[currentPageID].name:GetText()..  "--------=\n"
     end
