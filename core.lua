@@ -8,6 +8,7 @@ local T  = AceLibrary("Tablet-2.0")
 defaults = {
   Active = true,
   CurrentPageID = 1,
+  WindowPosition = {"CENTER", 0, 0},
   Pages = {
     [1] = {
       ShortStringMode = false,
