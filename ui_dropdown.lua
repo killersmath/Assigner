@@ -8,39 +8,44 @@ function Assigner.ui:CreateDropDownPlayerMenu(parent, prefix, row, col, pos, all
   dropDown.allowedClasses = allowedClasses
   dropDown.initialize = Assigner.ui.InitializeDropDownPlayerMenu
 
-  --UIDropDownMenu_SetWidth(150, dropDown)
+  --UIDropDownMenu_SetButtonWidth(250, dropDown)
   getglobal(dropDown:GetName().."Button"):SetScript("OnClick", function() 
     ToggleDropDownMenu(); -- inherit UIDropDownMenuTemplate functions
     end)
-
   return dropDown
 end
 
-function Assigner.ui:InitializeDropDownPlayerMenu()
-  local currentDropDownMenu = this:GetParent()
-  local players = Assigner:GetRaidPlayers(currentDropDownMenu.allowedClasses)
+function Assigner.ui:InitializeDropDownPlayerMenu(a,b,c)
+  local dropDownMenu = this:GetParent()
+  local dropDownListLevel1 = getglobal("DropDownList1")
+  dropDownListLevel1:SetScale(Assigner.ui.frame:GetScale()) -- Fix scale
 
   local clickFunc = function() 
     UIDropDownMenu_SetSelectedID(this.owner, this:GetID())
-    Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Players[this.owner.row][this.owner.col] = this.value
+    Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].Players[this.owner.row][this.owner.col] = this.value
   end
 
   local info = {}
   info.text = "NONE"
   info.value = "NONE"
   info.checked = false
-  info.owner = currentDropDownMenu -- DropdownMenu
+  info.owner = dropDownMenu -- Current Dropdown Menu which called this function
   info.func = clickFunc
   UIDropDownMenu_AddButton(info);
 
-  for _,player in players do
+  for _,player in Assigner:GetRaidPlayers(dropDownMenu.allowedClasses) do
+
     info.text = player.name
     info.value = player.name
+    info.owner = dropDownMenu
     info.checked = false
-    info.owner = currentDropDownMenu
-    local color = Assigner.constants.CLASS_COLORS[player.class]
-    if(color) then info.textR, info.textG, info.textB = unpack(color) end
+    info.icon = "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes"
+		info.tCoordLeft, info.tCoordRight, info.tCoordTop, info.tCoordBottom = unpack(Assigner.constants.CLASS_ICON_TCOORDS[player.class])
+    info.textR, info.textG, info.textB = unpack(Assigner.constants.CLASS_COLORS[player.class])
     info.func = clickFunc
+
     UIDropDownMenu_AddButton(info);
+
+    getglobal("DropDownList1Button"..dropDownListLevel1.numButtons.."Icon"):SetPoint("RIGHT", -20, 0) -- Fix the Icon anchor
   end
 end

@@ -1,29 +1,41 @@
-function Assigner.ui:CreateRaidTargetTexture(parent, pos, targetName)
+function Assigner.ui:CreateRaidTargetTexture(parent, pos, iconName)
   local texture = parent:CreateTexture("Texture", "Background")
   texture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
-  texture:SetPoint("TOPLEFT", pos.x, pos.y) -- this is relative to the frame created above, unless an anchor frame is given
-  texture:SetWidth(30)
-  texture:SetHeight(30)
-  texture:SetTexCoord(unpack(Assigner.constants.RAID_TARGETS_TCOORDS[targetName]))
+  texture:SetPoint("TOPLEFT", pos.x, pos.y)
+  texture:SetWidth(20)
+  texture:SetHeight(20)
+  texture:SetTexCoord(unpack(Assigner.constants.RAID_TARGETS_TCOORDS[iconName]))
   return texture
 end
 
-function Assigner.ui:CreateNormalText(parent, pos, text)
-  local textFrame = parent:CreateFontString(parent, "OVERLAY", "GameFontHighlightSmall")
-  textFrame:SetPoint("TOPLEFT", pos.x, pos.y)
-  textFrame:SetText(text)
-  --textFrame:SetFont("Fonts\\FRIZQT__.TTF", 9)
-  return textFrame
+function Assigner.ui:CreateNormalText(parent, pos, displayText)
+  local text = parent:CreateFontString(parent, "OVERLAY", "GameFontHighlightSmall")
+  text:SetPoint("TOPLEFT", pos.x, pos.y)
+  text:SetText(displayText)
+  return text
 end
 
-function Assigner.ui:CreateCheckButtonWithText(parent, name, pos, displayText, onClick)
+function Assigner.ui:CreateCheckButton(parent, name, pos, displayText, onClick)
   if( not pos.anchor) then pos.anchor = "TOPLEFT" end
   local checkButton = CreateFrame("CheckButton", name, parent, "UICheckButtonTemplate")
+  checkButton.text = getglobal(name.."Text")
+  checkButton.text:SetText(displayText)
 	checkButton:SetPoint(pos.anchor, pos.x, pos.y)
 	checkButton:SetHeight(30)
 	checkButton:SetWidth(30)
-	checkButton:SetScript("OnClick", onClick)
-  getglobal(name.."Text"):SetText(displayText)
+  checkButton:SetScript("OnClick", onClick)
+  --[[
+  checkButton:SetScript("OnLeave", function()
+    GameTooltip:Hide()
+  end)
+
+  checkButton:SetScript("OnEnter", function()
+    GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+    GameTooltip:SetText("Test 1",1.0, 0.82, 0.0, 1,1)
+    GameTooltip:AddLine("Test 2", 0.82, 1.0, 0.0);
+    GameTooltip:Show()
+  end)
+  --]]
   return checkButton
 end
 
@@ -50,16 +62,4 @@ function Assigner.ui:CreateEditBox(parent, name, pos, size, displayText)
   editBox:SetHeight(size.h)
 	editBox:SetAutoFocus(nil)
   return editBox
-end
-
-function Assigner.ui:CreateOptionsButton(parent, name, pos, displayText, anchorFrame)
-  if( not pos.anchor) then pos.anchor = "TOPLEFT" end
-	local button = CreateFrame("Button", name, parent, "UIPanelButtonTemplate")
-	button:SetPoint("TOPLEFT", anchorFrame, pos.anchor, pos.x, pos.y)
-	button:SetHeight(35)
-	button:SetWidth(150)
-	button:SetText(text)
-	button:SetScript("OnClick", Assigner.ui.OnPageSwitch)
-	button.id = id
-	return button
 end

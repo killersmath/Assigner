@@ -7,13 +7,53 @@ local T  = AceLibrary("Tablet-2.0")
 
 defaults = {
   Active = true,
-  CurrentFrameID = 1,
+  CurrentPageID = 1,
   Pages = {
     [1] = {
       ShortStringMode = false,
       ChannelType = 1,
       CustomChannel = 1,
       Players = {
+        -- Skull  (8)
+        [8] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- X
+        [7] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Square 
+        [6] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Triangle
+        [4] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Diamond
+        [3] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Moon
+        [5] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Circle
+        [2] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
+        -- Star
+        [1] = {
+          [1] = "NONE",
+          [2] = "NONE",
+        },
       },
     },
     [2] = {
@@ -231,13 +271,13 @@ function Assigner:BuildAssignementRowString(row, firstString, prefix)
   message = ""
   assignFound = false
 
-  for _, player in Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].Players[row] do
+  for _, player in Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].Players[row] do
     if(player ~= "NONE") then
       if(assignFound) then
         message = message .. ", "
       else
         if (not firstString) then
-          if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ShortStringMode or Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType == 2) then 
+          if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].ShortStringMode or Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].ChannelType == 2) then 
             message = message .. "; "
           else message = message .. "\n"
           end
@@ -271,7 +311,7 @@ function Assigner:HasAssignInPage(page)
 end
 
 function Assigner:GetAssignementString()
-  local currentPageID = Assigner.db.profile.CurrentFrameID
+  local currentPageID = Assigner.db.profile.CurrentPageID
   local message = ""
 
   if (self:HasAssignInPage(currentPageID)) then
@@ -314,6 +354,6 @@ function Assigner:PostAssignement()
   if((globalLastAnnounceTime + delayTime/1000) > currentTime) then return end
 
   local message = Assigner:GetAssignementString()
-  Assigner:SendMessage(message, Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].ChannelType, Assigner.db.profile.Pages[Assigner.db.profile.CurrentFrameID].CustomChannel)
+  Assigner:SendMessage(message, Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].ChannelType, Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].CustomChannel)
   globalLastAnnounceTime = currentTime
 end
