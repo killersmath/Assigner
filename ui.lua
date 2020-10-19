@@ -23,7 +23,7 @@ function Assigner.ui:CreateUi()
   self.frame:SetScript("OnDragStart", function () self.frame:StartMoving() end)
   self.frame:SetScript("OnDragStop", function () 
     self.frame:StopMovingOrSizing() 
-    _, _, relativePoint, xOfs, yOfs = self.frame:GetPoint()
+    _, _, relativePoint, xOfs, yOfs = this:GetPoint()
     Assigner.db.profile.WindowPosition = {relativePoint, xOfs, yOfs}
   end)
   self.frame:SetScript("OnHide", function () self.frame:StopMovingOrSizing() end)
