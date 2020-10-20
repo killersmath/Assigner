@@ -133,8 +133,6 @@ function Page_Kick_Pummel:SetupWindow()
     end
   end
 
-  self.core:Print(self.core.db.char.CurrentPageID, self.name)
-
   if(self.core.db.char.CurrentPageID == self.name) then
     self.ui.frame.scrollFrames[self.core.db.char.CurrentPageID]:Show()
   end
