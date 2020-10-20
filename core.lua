@@ -1,118 +1,20 @@
-local globalLastAnnounceTime = 0
-local delayTime = 1000 --ms
+globalLastAnnounceTime = 0
+delayTime = 1000 --ms
 
-Assigner = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceEvent-2.0", "AceHook-2.1", "FuBarPlugin-2.0")
+Assigner = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceModuleCore-2.0", "AceEvent-2.0", "AceHook-2.1", "FuBarPlugin-2.0")
+Assigner.ui = {}
 
 local T  = AceLibrary("Tablet-2.0")
 
-defaults = {
+Assigner:RegisterDB("AssignerDB")
+
+Assigner.defaultDB = {
   Active = true,
-  CurrentPageID = 1,
+  CurrentPageID = "Page_Tank",
   WindowPosition = {"CENTER", 0, 0},
-  Pages = {
-    [1] = {
-      ShortStringMode = false,
-      ChannelType = 1,
-      CustomChannel = 1,
-      Players = {
-        -- Skull  (8)
-        [8] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- X
-        [7] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Square 
-        [6] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Triangle
-        [4] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Diamond
-        [3] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Moon
-        [5] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Circle
-        [2] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Star
-        [1] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-      },
-    },
-    [2] = {
-      ShortStringMode = false,
-      ChannelType = 1,
-      CustomChannel = 1,
-      Players = {
-        -- Skull  (8)
-        [8] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- X
-        [7] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Square 
-        [6] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Triangle
-        [4] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Diamond
-        [3] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Moon
-        [5] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Circle
-        [2] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-        -- Star
-        [1] = {
-          [1] = "NONE",
-          [2] = "NONE",
-        },
-      },
-    },
-    [3] = {
-      ShortStringMode = false,
-      ChannelType = 1,
-      CustomChannel = 1,
-      Players = {
-      },
-    },
-  },
 }
+
+Assigner:RegisterDefaults("char", Assigner.defaultDB )
 
 Assigner.constants = {
 	BACKDROP = {
@@ -169,7 +71,7 @@ Assigner.constants = {
   },
 }
 
-local options  = {
+Assigner.cmdTable  = {
   type = "group",
   handler = Assigner,
   args =
@@ -190,10 +92,115 @@ local options  = {
       type = "execute",
       desc = "Show Interface",
       func = function() Assigner.ui.mainFrame:Show() end,
-      disabled = function() return not Assigner.db.profile.Active end,
+      disabled = function() return not Assigner.db.char.Active end,
     },
   },
 }
+
+Assigner:RegisterChatCommand( { "/ass", "/assinger" }, Assigner.cmdTable )
+
+--------
+-- Module Prototype  
+--------
+
+Assigner.modulePrototype.core = Assigner
+Assigner.modulePrototype.ui = Assigner.ui
+
+function Assigner.modulePrototype:OnInitialize()
+  self.core:RegisterModule(self.name, self)
+end
+
+function Assigner.modulePrototype:HasPlayerAssign()
+  local found = false
+
+  if (self.db.char.Players) then
+    for i, i_value in self.db.char.Players do
+      for j, j_value in self.db.char.Players[i] do
+        if (j_value ~= "NONE") then
+          found = true
+          break
+        end
+      end
+    end
+  end
+
+  return found
+end
+
+function Assigner.modulePrototype:GetAssignementString()
+  return ""
+end
+
+function Assigner.modulePrototype:BuildAssignementRowString(row, firstString, prefix)
+  message = ""
+  assignFound = false
+
+  if self.db.char.Players then
+    for _, player in self.db.char.Players[row] do
+      if(player ~= "NONE") then
+        if(assignFound) then
+          message = message .. ", "
+        else
+          if (not firstString) then
+            if(self.db.char.ShortStringMode or self.db.char.ChannelType == 2) then 
+              message = message .. "; "
+            else message = message .. "\n"
+            end
+          else 
+            firstString = false
+          end
+
+          assignFound = true
+          if prefix then message = message .. prefix end
+        end
+        message = message .. player
+      end
+    end
+  end
+
+  return message, firstString
+end
+
+function Assigner:RegisterModule(name, module)
+  if module.db and module.RegisterDefaults and type(module.RegisterDefaults) == "function" then
+		module:RegisterDefaults("char", module.defaultDB or {})
+	else
+		self:RegisterDefaults(name, "char", module.defaultDB or {})
+  end
+  
+  -- adquire db
+  if not module.db then module.db = self:AcquireDBNamespace(name) end
+
+  -- append cmdTable
+  if module.consoleOptions then
+		if module.external then
+			self.cmdTable.args["extra"].args[module.consoleCMD or name] = module.consoleOptions
+		else
+			self.cmdTable.args[module.consoleCMD or name] = module.consoleOptions
+		end
+  end
+  
+  -- onregister trigger
+  module.registered = true
+	if module.OnRegister and type(module.OnRegister) == "function" then
+		module:OnRegister()
+  end
+  
+end
+
+function Assigner:EnableModule(moduleName)
+  local m = self:GetModule(moduleName)
+  if m and not self:IsModuleActive(moduleName) then
+    self:ToggleModuleActive(moduleName, true)
+  end
+end
+
+function Assigner:DisableModule(moduleName)
+	local m = self:GetModule(moduleName)
+	if m then
+		self:ToggleModuleActive(m, false)
+	end
+end
 
 ---------
 -- FuBar
@@ -208,15 +215,12 @@ Assigner.hideWithoutStandby = true
 Assigner.independentProfile = true
 
 function Assigner:OnTooltipUpdate()
-  --local groupType = self.db.profile.GroupType
-  --local hint = string.format("%s\n|cffFFA500Click:|r Cycle Group Mode|r\n|cffFFA500Right-Click:|r Options",groupTypeDesc[groupType])
   local hint = "|cffFFA500Click:|r Show Window|r\n|cffFFA500Right-Click:|r Options"
   T:SetHint(hint)
 end
 
 function Assigner:OnTextUpdate()
-  local active = self.db.profile.Active
-  if (not active) then
+  if (not self.db.char.Active) then
     self:SetText("Suspended")
   else
     self:SetText("Assigner")
@@ -224,137 +228,57 @@ function Assigner:OnTextUpdate()
 end
 
 function Assigner:OnClick()
-  if(arg1 == "LeftButton") then
-    self.ui.frame:Show();
-  end
+  if(arg1 == "LeftButton") then self.ui.frame:Show(); end
 end
 
 function Assigner:IconUpdate()
-  if self.db.profile.Active then
+  if self.db.char.Active then
     self:SetIcon([[Interface\AddOns\Assigner\Media\icon]])
   else
     self:SetIcon([[Interface\AddOns\Assigner\Media\icon_disabled]])
   end
 end
 
-function Assigner:OnEnable() -- PLAYER_LOGIN (2)
+function Assigner:OnInitialize()
+  self.OnMenuRequest = self.cmdTable
+  self:CreateWindow()
+  self.loading = true
+  self:ToggleActive(true)
+end
+
+function Assigner:OnEnable()
+  if AceLibrary("AceEvent-2.0"):IsFullyInitialized() then
+		self:AceEvent_FullyInitialized()
+	else
+		self:RegisterEvent("AceEvent_FullyInitialized")
+	end
   self:IconUpdate()
   self:UpdateTooltip()
+end
+
+function Assigner:AceEvent_FullyInitialized()
+  --[[
+  if GetNumRaidMembers() > 0 or not self.loading then
+		-- Enable all disabled modules
+		for name, module in self:IterateModules() do
+				--self:ToggleModuleActive(module, true)
+    end
+  end
+  --]]
+
+  self.loading = nil
 end
 
 function Assigner:OnDisable()
   self:IconUpdate()
 end
 
-function Assigner:OnInitialize()
-  self:RegisterDB("AssignerDB")
-  self:RegisterDefaults("profile", defaults )
-
-  self:RegisterChatCommand( { "/ass", "/assinger" }, options )
-  self.OnMenuRequest = options
-  
-  self:CreateWindow()
-
-  --DEFAULT_CHAT_FRAME:AddMessage(self.addon.title.." v"..self.addon.version.. " has been loaded.")
-end
-
 function Assigner:GetActiveStatusOption()
-  return self.db.profile.Active
+  return self.db.char.Active
 end
 
 function Assigner:SetActiveStatusOption(newStatus)
-  self.db.profile.Active = newStatus
+  self.db.char.Active = newStatus
   self:IconUpdate()
   self:UpdateText()
-end
-
-function Assigner:BuildAssignementRowString(row, firstString, prefix)
-  message = ""
-  assignFound = false
-
-  for _, player in Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].Players[row] do
-    if(player ~= "NONE") then
-      if(assignFound) then
-        message = message .. ", "
-      else
-        if (not firstString) then
-          if(Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].ShortStringMode or Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].ChannelType == 2) then 
-            message = message .. "; "
-          else message = message .. "\n"
-          end
-        else 
-          firstString = false
-        end
-
-        assignFound = true
-        if prefix then message = message .. prefix end
-      end
-      message = message .. player
-    end
-  end
-
-  return message, firstString
-end
-
-function Assigner:HasAssignInPage(page)
-  local found = false
-
-  for i, i_value in Assigner.db.profile.Pages[page].Players do
-    for j, j_value in Assigner.db.profile.Pages[page].Players[i] do
-      if (j_value ~= "NONE") then
-        found = true
-        break
-      end
-    end
-  end
-
-  return found
-end
-
-function Assigner:GetAssignementString()
-  local currentPageID = Assigner.db.profile.CurrentPageID
-  local message = ""
-
-  if (self:HasAssignInPage(currentPageID)) then
-    if (not Assigner.db.profile.Pages[currentPageID].ShortStringMode and Assigner.db.profile.Pages[currentPageID].ChannelType ~= 2) then
-      message = "--- " .. Assigner.ui.frame.pages[currentPageID].name:GetText()..  " ---\n"
-    end
-
-    local assignement
-    firstString = true
-
-    if (currentPageID == 2) then
-      assignement, firstString = Assigner:BuildAssignementRowString(8, firstString, "("..Assigner.constants.RAID_TARGETS_NUMBERS[8].."): ")
-      message = message .. assignement
-      assignement, firstString = Assigner:BuildAssignementRowString(7, firstString, "("..Assigner.constants.RAID_TARGETS_NUMBERS[7].."): ")
-      message = message .. assignement
-      assignement, firstString = Assigner:BuildAssignementRowString(6, firstString, "("..Assigner.constants.RAID_TARGETS_NUMBERS[6].."): ")
-      message = message .. assignement
-      assignement, firstString = Assigner:BuildAssignementRowString(4, firstString, "("..Assigner.constants.RAID_TARGETS_NUMBERS[4].."): ")
-      message = message .. assignement
-      assignement, firstString = Assigner:BuildAssignementRowString(3, firstString, "("..Assigner.constants.RAID_TARGETS_NUMBERS[3].."): ")
-      message = message .. assignement
-      assignement, firstString = Assigner:BuildAssignementRowString(5, firstString, "("..Assigner.constants.RAID_TARGETS_NUMBERS[5].."): ")
-      message = message .. assignement
-      assignement, firstString = Assigner:BuildAssignementRowString(1, firstString, "("..Assigner.constants.RAID_TARGETS_NUMBERS[1].."): ")
-      message = message .. assignement
-      assignement, firstString = Assigner:BuildAssignementRowString(2, firstString, "("..Assigner.constants.RAID_TARGETS_NUMBERS[2].."): ")
-      message = message .. assignement
-    else 
-      self:Print("Wrong Page")
-    end
-  else 
-    message = "No Assigns"
-  end
-
-  return message
-end
-
-function Assigner:PostAssignement()
-  local currentTime = time()
-  if((globalLastAnnounceTime + delayTime/1000) > currentTime) then return end
-
-  local message = Assigner:GetAssignementString()
-  Assigner:SendMessage(message, Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].ChannelType, Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].CustomChannel)
-  globalLastAnnounceTime = currentTime
 end

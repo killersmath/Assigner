@@ -18,6 +18,7 @@ Libs\AceDebug-2.0\AceDebug-2.0.lua
 Libs\AceDB-2.0\AceDB-2.0.lua
 Libs\AceAddon-2.0\AceAddon-2.0.lua
 Libs\AceHook-2.1\AceHook-2.1.lua
+Libs\AceModuleCore-2.0\AceModuleCore-2.0.lua
 # Libs Extra
 Libs\Dewdrop-2.0\Dewdrop-2.0.lua
 Libs\Tablet-2.0\Tablet-2.0.lua
@@ -31,3 +32,7 @@ Core_Utils.lua
 UI.lua
 UI_Utils.lua
 UI_Dropdown.lua
+
+Modules\Page-Tank.lua
+Modules\Page-Stun-Pummel.lua
+Modules\Page-Paladin.lua

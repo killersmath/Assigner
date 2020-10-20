@@ -22,7 +22,7 @@ function Assigner.ui:InitializeDropDownPlayerMenu(a,b,c)
 
   local clickFunc = function() 
     UIDropDownMenu_SetSelectedID(this.owner, this:GetID())
-    Assigner.db.profile.Pages[Assigner.db.profile.CurrentPageID].Players[this.owner.row][this.owner.col] = this.value
+    Assigner.db.namespaces[Assigner.db.char.CurrentPageID].char.Players[this.owner.row][this.owner.col] = this.value
   end
 
   local info = {}
