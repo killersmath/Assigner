@@ -99,7 +99,7 @@ function Page_Paladin:CreatePage()
     textHeader:SetPoint("TOP", dropDown, "TOP", 65, 15)
     textHeader:SetText("Paladin " .. i)
     textHeader:SetTextColor(0.96, 0.55, 0.73)
-    dropDown = self.ui:CreateDropDownPlayerMenu(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionDropDownPlayer", i, 2, {x=175,y=-(110+i*50)}, {"PALADIN", "DRUID", "PRIEST"}, divineClickFunction)
+    dropDown = self.ui:CreateDropDownPlayerMenu(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionDropDownPlayer", i, 2, {x=160,y=-(110+i*50)}, {"PALADIN", "DRUID", "PRIEST"}, divineClickFunction)
     textHeader = self.ui.frame.pages[self.name].divineInterventionLayout:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     textHeader:SetPoint("TOP", dropDown, "TOP", 65, 15)
     textHeader:SetText("Target " .. i)
@@ -170,7 +170,7 @@ function Page_Paladin:GetDivineInterventionAssignString()
   local message = "=--- DI Assign ---=\n"
 
   if(self:HasDivineInterventionAssign()) then
-    local count = 0
+    local count = 1
     for i, row in self.db.char.DivineIntervention.Players do
       if(row[1] ~= "NONE") then
         message = message .. "[".. count .. "]: " .. row[1] .. " -> " .. row[2] .. "\n"

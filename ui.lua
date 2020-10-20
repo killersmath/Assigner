@@ -10,7 +10,7 @@ function Assigner.ui:CreateUi()
 
   self.frame = CreateFrame("Frame", nil, UIParent)
   self.frame:SetFrameStrata("DIALOG")
-  self.frame:SetWidth(720)
+  self.frame:SetWidth(670)
   self.frame:SetHeight(480)
   self.frame:SetPoint(unpack(Assigner.db.char.WindowPosition))
   self.frame:EnableMouse(true)
@@ -73,7 +73,7 @@ end
 
 function Assigner.ui:CreateDefaultPage(id, displayName, displayIcon, iconCoords)
   self.frame.scrollFrames[id] = CreateFrame("ScrollFrame", nil, self.frame)
-  self.frame.scrollFrames[id]:SetWidth(500)
+  self.frame.scrollFrames[id]:SetWidth(450)
   self.frame.scrollFrames[id]:SetHeight(405)
   self.frame.scrollFrames[id].id = id
 
@@ -117,7 +117,7 @@ function Assigner.ui:CreateDefaultPage(id, displayName, displayIcon, iconCoords)
   -- Main Page of Page
   self.frame.pages[id] = CreateFrame("Frame", id.." Page", self.frame.scrollFrames[id])
   self.frame.pages[id]:SetHeight(1)
-  self.frame.pages[id]:SetWidth(500)
+  self.frame.pages[id]:SetWidth(450)
 
   -- Top Title of page
   self.frame.pages[id].name = self.frame.pages[id]:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -166,22 +166,25 @@ function Assigner.ui:CreateStandardTopMenuBar(module)
   -- Top Menu Bar of page
   self.frame.pages[module.name].topMenuBarFrame = CreateFrame("Frame", nil, self.frame.pages[module.name])
   self.frame.pages[module.name].topMenuBarFrame:SetWidth(420)
-  self.frame.pages[module.name].topMenuBarFrame:SetHeight(210)
-  self.frame.pages[module.name].topMenuBarFrame:SetPoint("TOPLEFT", 10, -50)
+  self.frame.pages[module.name].topMenuBarFrame:SetHeight(195)
+  self.frame.pages[module.name].topMenuBarFrame:SetPoint("TOPLEFT", 0, -50)
 
-  self.frame.pages[module.name].shortAnnounceCheckBox = self:CreateCheckButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ShortAnnounceCheckBox" , {x=85, y=0}, "Short Announce", function () module.db.char.ShortStringMode = this:GetChecked() end)
+  self.frame.pages[module.name].shortAnnounceCheckBox = self:CreateCheckButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ShortAnnounceCheckBox" , {x=25, y=0}, "Short Announce", function () module.db.char.ShortStringMode = this:GetChecked() end)
   
-  self.frame.pages[module.name].resetAssigns = self:CreateButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ResetAssignementButton" ,  {x=70, y=-38}, {w=140, h=30}, "Reset Assigns", function () Assigner.ui:OnStandardResetAssignButtonClicked(module) end)
-  self.frame.pages[module.name].sendButton = self:CreateButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."SendAssignementButton" , {x=70, y=-70}, {w=140, h=30}, "Send Assign", function () Assigner.ui:OnStandardSendAssignButtonClicked(module) end)
+  self.frame.pages[module.name].resetAssigns = self:CreateButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ResetAssignementButton" ,  {x=25, y=-30}, {w=140, h=30}, "Reset Assigns", function () Assigner.ui:OnStandardResetAssignButtonClicked(module) end)
+  self.frame.pages[module.name].sendButton = self:CreateButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."SendAssignementButton" , {x=25, y=-62}, {w=140, h=30}, "Send Assign", function () Assigner.ui:OnStandardSendAssignButtonClicked(module) end)
 
   -- channel type of page
-  self:CreateNormalText(self.frame.pages[module.name].topMenuBarFrame, {x=310, y=-2}, "Channel"):SetFont("Fonts\\FRIZQT__.TTF", 15)
+  self.frame.pages[module.name].channelTypeHeader = self.frame.pages[module.name]:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	self.frame.pages[module.name].channelTypeHeader:SetPoint("TOPLEFT", self.frame.pages[module.name].topMenuBarFrame, "TOPLEFT", 210, -8)
+  self.frame.pages[module.name].channelTypeHeader:SetText("Channel Type")
+  --self:CreateNormalText(self.frame.pages[module.name].topMenuBarFrame, {x=180, y=-2}, "Channel"):SetFont("Fonts\\FRIZQT__.TTF", 15)
   self.frame.pages[module.name].channelTypeGroup = {}
-  self.frame.pages[module.name].channelTypeRaidCheckBox = self:CreateCheckButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ChannelTypeRaidCheckBox" , {x=280, y=-23}, "Raid", self.OnChannelTypeCheckBoxClicked)
+  self.frame.pages[module.name].channelTypeRaidCheckBox = self:CreateCheckButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ChannelTypeRaidCheckBox" , {x=210, y=-23}, "Raid", self.OnChannelTypeCheckBoxClicked)
   self.frame.pages[module.name].channelTypeRaidCheckBox.id = 1
-  self.frame.pages[module.name].channelTypeRaidWarningCheckBox = self:CreateCheckButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ChannelTypeRaidWarningCheckBox" , {x=280, y=-48}, "Raid Warning", self.OnChannelTypeCheckBoxClicked)
+  self.frame.pages[module.name].channelTypeRaidWarningCheckBox = self:CreateCheckButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ChannelTypeRaidWarningCheckBox" , {x=210, y=-45}, "Raid Warning", self.OnChannelTypeCheckBoxClicked)
   self.frame.pages[module.name].channelTypeRaidWarningCheckBox.id = 2
-  self.frame.pages[module.name].channelTypeCustomCheckBox = self:CreateCheckButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ChannelTypeCustomCheckBox", {x=280, y=-74}, "Custom Channel", self.OnChannelTypeCheckBoxClicked)
+  self.frame.pages[module.name].channelTypeCustomCheckBox = self:CreateCheckButton(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ChannelTypeCustomCheckBox", {x=210, y=-67}, "Custom Channel", self.OnChannelTypeCheckBoxClicked)
   self.frame.pages[module.name].channelTypeCustomCheckBox.id = 3
 
   self.frame.pages[module.name].channelTypeGroup["ChannelTypeRaidCheckBox"] = self.frame.pages[module.name].channelTypeRaidCheckBox
@@ -190,7 +193,7 @@ function Assigner.ui:CreateStandardTopMenuBar(module)
 
   self.frame.pages[module.name].channelEditBox = self:CreateEditBox(self.frame.pages[module.name].topMenuBarFrame, "Page"..module.name.."ChannelEditBox" , nil, {w=15,h=30})
   self.frame.pages[module.name].channelEditBox:SetMaxLetters(1)
-  self.frame.pages[module.name].channelEditBox:SetPoint("RIGHT", self.frame.pages[module.name].channelTypeCustomCheckBox, "RIGHT", 112, 0)
+  self.frame.pages[module.name].channelEditBox:SetPoint("RIGHT", self.frame.pages[module.name].channelTypeCustomCheckBox, "RIGHT", 104, 0)
   self.frame.pages[module.name].channelEditBox:SetScript("OnEnterPressed", self.OnCustomChannelEditBoxEnterPressed)  
 end
 
