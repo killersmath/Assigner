@@ -2,19 +2,42 @@ globalLastAnnounceTime = 0
 delayTime = 1000 --ms
 
 Assigner = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "AceModuleCore-2.0", "AceEvent-2.0", "AceHook-2.1", "FuBarPlugin-2.0")
+Assigner:SetModuleMixins("AceDebug-2.0", "AceEvent-2.0")
 Assigner.ui = {}
 
 local T  = AceLibrary("Tablet-2.0")
 
-Assigner:RegisterDB("AssignerDB")
-
 Assigner.defaultDB = {
   Active = true,
-  CurrentPageID = "Page_Tank",
+  CurrentPageID = "TankPage",
   WindowPosition = {"CENTER", 0, 0},
 }
 
-Assigner:RegisterDefaults("char", Assigner.defaultDB )
+Assigner.cmdTable  = {
+  type = "group",
+  handler = Assigner,
+  args =
+  {
+    Active =
+    {
+      name = "Active",
+      desc = "Activate/Suspend 'Assigner'",
+      type = "toggle",
+      get  = "GetActiveStatusOption",
+      set  = "SetActiveStatusOption",
+      order = 1,
+    },
+    Show = 
+    {
+      order = 2,
+      name = "Show", 
+      type = "execute",
+      desc = "Show Interface",
+      func = function() Assigner.ui.frame:Show() end,
+      disabled = function() return not Assigner.db.char.Active end,
+    },
+  },
+}
 
 Assigner.constants = {
 	BACKDROP = {
@@ -24,8 +47,10 @@ Assigner.constants = {
 		insets = {left = -1.5, right = -1.5, top = -1.5, bottom = -1.5},
   },
   FONTS = {
-    ["Lobster"]       = "Interface\\AddOns\\Assigner\\Media\\Fonts\\Lobster.ttf",
-    ["Righteous"]       = "Interface\\AddOns\\Assigner\\Media\\Fonts\\Righteous.ttf",
+    ["Lobster"]        = "Interface\\AddOns\\Assigner\\Media\\Fonts\\Lobster.ttf",
+    ["Righteous"]      = "Interface\\AddOns\\Assigner\\Media\\Fonts\\Righteous.ttf",
+    ["Roboto"]         = "Interface\\AddOns\\Assigner\\Media\\Fonts\\Roboto-Regular.ttf",
+    ["Roboto-Bold"]    = "Interface\\AddOns\\Assigner\\Media\\Fonts\\Roboto-Bold.ttf",
   },
   CLASS_COLORS = {
     ["WARRIOR"]       = {0.78, 0.60, 0.43},
@@ -71,32 +96,8 @@ Assigner.constants = {
   },
 }
 
-Assigner.cmdTable  = {
-  type = "group",
-  handler = Assigner,
-  args =
-  {
-    Active =
-    {
-      name = "Active",
-      desc = "Activate/Suspend 'Assigner'",
-      type = "toggle",
-      get  = "GetActiveStatusOption",
-      set  = "SetActiveStatusOption",
-      order = 1,
-    },
-    Show = 
-    {
-      order = 2,
-      name = "Show", 
-      type = "execute",
-      desc = "Show Interface",
-      func = function() Assigner.ui.mainFrame:Show() end,
-      disabled = function() return not Assigner.db.char.Active end,
-    },
-  },
-}
-
+Assigner:RegisterDB("AssignerDB")
+Assigner:RegisterDefaults("char", Assigner.defaultDB )
 Assigner:RegisterChatCommand( { "/ass", "/assinger" }, Assigner.cmdTable )
 
 --------
@@ -180,11 +181,18 @@ function Assigner:RegisterModule(name, module)
 		end
   end
   
+  if(module.db.char.Active) then
+    self:ToggleModuleActive(module, module.db.char.Active)
+  else
+    self:ToggleModuleActive(module, true)
+  end
+
   -- onregister trigger
   module.registered = true
 	if module.OnRegister and type(module.OnRegister) == "function" then
 		module:OnRegister()
   end
+
   
 end
 

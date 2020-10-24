@@ -1,6 +1,6 @@
-Page_Tank = Assigner:NewModule("Page_Tank")
+KickPummelPage = Assigner:NewModule("KickPummelPage")
 
-Page_Tank.defaultDB = {
+KickPummelPage.defaultDB = {
 	ShortStringMode = false,
   ChannelType = 1,
   CustomChannel = 1,
@@ -48,13 +48,13 @@ Page_Tank.defaultDB = {
   },
 }
 
-function Page_Tank:OnRegister()
+function KickPummelPage:OnRegister()
   self:CreateWindow()
   self:SetupWindow()
 end
 
-function Page_Tank:CreateWindow()
-  self.ui:CreateDefaultPage(self.name, "Tank", "Interface\\Icons\\Ability_Warrior_DefensiveStance")
+function KickPummelPage:CreateWindow()
+  self.ui:CreateDefaultPage(self.name, "Stun/Pummel", "Interface\\Icons\\ability_kick")
   self.ui:CreateStandardTopMenuBar(self)
 
   self.ui.frame.pages[self.name].iconFrame = CreateFrame("Frame", nil, self.ui.frame.pages[self.name].topMenuBarFrame)
@@ -102,7 +102,7 @@ function Page_Tank:CreateWindow()
   self.ui:CreateDropDownPlayerMenu(self.ui.frame.pages[self.name].iconFrame, "Page"..self.name.."DropDownPlayer", 2, 2, {x=180,y=-245}, {"WARRIOR", "PALADIN", "DRUID"})
 end
 
-function Page_Tank:SetupWindow()
+function KickPummelPage:SetupWindow()
   -----------
   -- Short Announce Checkbox
   ----------- 
@@ -138,7 +138,7 @@ function Page_Tank:SetupWindow()
   end
 end
 
-function Page_Tank:GetAssignementString()
+function KickPummelPage:GetAssignementString()
   local message = ""
 
   if (not self.db.char.ShortStringMode and self.db.char.ChannelType ~= 2) then
