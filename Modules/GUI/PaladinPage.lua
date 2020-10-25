@@ -160,7 +160,7 @@ function PaladinPage:OnDivineInterventionSendSyncClicked()
       PaladinPage:TriggerEvent("Assigner_SendSync", "ASSPDI ".. index .. " " .. data[1] .. " " .. data[2])
     end
   else
-    PaladinPage.core:Print("I am not allowed")
+    PaladinPage.core:Print("You are not Raid Leader/Assist.")
   end
 end
 
