@@ -34,13 +34,13 @@ PaladinDIMonitor.consoleOptions = {
 local _players = {
   [1] = {
     paladin = "Gohk",
-    target = "Target-1",
-    status = 2
+    target = "Killersmath",
+    status = 1
   },
   [2] = {
-    paladin = "Andromedus",
-    target = "Target-2",
-    status = 3
+    paladin = "Littleodyn",
+    target = "Killersmath",
+    status = 1
   },
   [3] = {
     paladin = "Paladin-3",
@@ -212,18 +212,6 @@ function PaladinDIMonitor:CreateWindow()
     local button = CreateFrame("Button", nil, self.ui.PaladinDIMonitor)
 end
 
-function PaladinDIMonitor:AssignCount()
-  count = 0
-  for i=1,5 do
-    if (_players[i].paladin == "NONE") then
-      break
-    end
-    count = count + 1
-  end
-
-  return count
-end
-
 function PaladinDIMonitor:UpdateUi()
   local count = 0
   for i=1,5 do
@@ -258,7 +246,6 @@ function PaladinDIMonitor:UpdateStatusRow(row)
   if (_players[row].status == 1) then self.ui.PaladinDIMonitor.rows[row].statusIcon:SetPoint("TOPLEFT", self.ui.PaladinDIMonitor.rows[row].targetText,  "TOPLEFT", 103, -4.5)
   else self.ui.PaladinDIMonitor.rows[row].statusIcon:SetPoint("TOPLEFT", self.ui.PaladinDIMonitor.rows[row].targetText,  "TOPLEFT", 103, 0)
   end
-  self.ui.PaladinDIMonitor.rows[row].statusIcon.texture = self.ui.PaladinDIMonitor.rows[row].statusIcon:CreateTexture(nil, "ARTWORK")
   self.ui.PaladinDIMonitor.rows[row].statusIcon.texture:SetAllPoints(self.ui.PaladinDIMonitor.rows[row].statusIcon)
   self.ui.PaladinDIMonitor.rows[row].statusIcon.texture:SetTexture(_statusIcons[_players[row].status].texturePath)
   self.ui.PaladinDIMonitor.rows[row].statusIcon.texture:SetTexCoord(unpack(_statusIcons[_players[row].status].textureCoords))
@@ -275,11 +262,11 @@ function PaladinDIMonitor:OnEnable()
 end
 
 function PaladinDIMonitor:AceEvent_FullyInitialized()
-  --self:RegisterEvent("SpellStatus_SpellCastInstant")
-  --self:RegisterEvent("Assigner_SendSync")
-  --self:RegisterEvent("CHAT_MSG_ADDON")
+  self:RegisterEvent("SpellStatus_SpellCastInstant")
+  self:RegisterEvent("Assigner_SendSync")
+  self:RegisterEvent("CHAT_MSG_ADDON")
 
-  --self:RegisterEvent("Assigner_RecvSync")
+  self:RegisterEvent("Assigner_RecvSync")
 end
 
 function PaladinDIMonitor:OnDisable()
@@ -287,28 +274,48 @@ function PaladinDIMonitor:OnDisable()
   self:UnregisterAllEvents()
 end
 
-function PaladinDIMonitor:Assigner_SendSync(msg)
-	local _, _, sync, rest = string.find(msg, "(%S+)%s*(.*)$")
+function PaladinDIMonitor:AssignCount()
+  count = 0
+  for i=1,5 do
+    if (_players[i].paladin == "NONE") then
+      break
+    end
+    count = count + 1
+  end
 
-	if not sync then return end
-
-  SendAddonMessage("Assigner", msg, "RAID")
-  self:CHAT_MSG_ADDON("Assigner", msg, "RAID", _playerName)
+  return count
 end
 
-function PaladinDIMonitor:CHAT_MSG_ADDON(prefix, message, type, sender)
-	if prefix ~= "Assigner" or type ~= "RAID" then return end
+function PaladinDIMonitor:FindPaladin(name)
+  for i, data in pairs(_players) do
+    if(data.paladin == name) then
+      return i
+    end
+  end
 
-	local _, _, sync, rest = string.find(message, "(%S+)%s*(.*)$")
-	if not sync then return end
-
-	self:TriggerEvent("Assigner_RecvSync", sync, rest, sender)
+  return nil
 end
 
-function PaladinDIMonitor:Assigner_RecvSync( sync, rest, nick )
-  self.core:Print("Sync " .. sync)
-  self.core:Print("Rest " .. rest)
-  self.core:Print("Nick " .. nick)
+function PaladinDIMonitor:Assigner_RecvSync(sync, rest, sender)
+  if(sync == "ASSCDI") then
+    self.core:Print("Sync " .. sync)
+    self.core:Print("Rest " .. rest)
+    self.core:Print("Nick " .. sender)
+
+    local index = self:FindPaladin(sender)
+
+    self.core:Print("Index " .. index)
+
+    if (index) then
+      if(rest == _players[index].target) then
+        _players[index].status = 2
+      else
+        _players[index].status = 3
+      end
+
+      self:UpdateStatusRow(index)
+    end
+  end
 end
 
 function PaladinDIMonitor:SpellStatus_SpellCastInstant(sId, sName, sRank, sFullName, sCastTime)
@@ -327,4 +334,22 @@ function PaladinDIMonitor:SpellStatus_SpellCastInstant(sId, sName, sRank, sFullN
 		end
     self:TriggerEvent("Assigner_SendSync", "ASSCDI "..targetName)
   --end
+end
+
+function PaladinDIMonitor:Assigner_SendSync(msg)
+	local _, _, sync, rest = string.find(msg, "(%S+)%s*(.*)$")
+
+	if not sync then return end
+
+  SendAddonMessage("Assigner", msg, "RAID")
+  self:CHAT_MSG_ADDON("Assigner", msg, "RAID", _playerName)
+end
+
+function PaladinDIMonitor:CHAT_MSG_ADDON(prefix, message, type, sender)
+	if prefix ~= "Assigner" or type ~= "RAID" then return end
+
+	local _, _, sync, rest = string.find(message, "(%S+)%s*(.*)$")
+	if not sync then return end
+
+	self:TriggerEvent("Assigner_RecvSync", sync, rest, sender)
 end
