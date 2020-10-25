@@ -8,53 +8,40 @@ PaladinDIMonitor.defaultDB = {
 }
 
 PaladinDIMonitor.consoleCMD = "DI"
+
 PaladinDIMonitor.consoleOptions = {
-	type = "group",
-	name = "Divine Invervention",
-	desc = "Options for Divine Intervention Module",
-	args   = {
-		["show"] = {
-			type = "execute",
-			name = "Show GUI",
-			desc = "Show the Divine Intervention GUI.",
-			order = 1,
-			func = function() PaladinDIMonitor:ShowGUI() end,
-    },
-    ["hide"] = {
-			type = "execute",
-			name = "Hide GUI",
-			desc = "Hide the Divine Intervention GUI.",
-			order = 2,
-			func = function() PaladinDIMonitor:HideGUI() end,
-    },
-	}
+  order = 2,
+  name = "Show/Hide", 
+  type = "execute",
+  desc = "Show/Hide Interface",
+  func = function() if (PaladinDIMonitor.ui.PaladinDIMonitor:IsShown()) then PaladinDIMonitor.ui.PaladinDIMonitor:Hide() else PaladinDIMonitor.ui.PaladinDIMonitor:Show() end end,
 }
 
 
 local _players = {
   [1] = {
-    paladin = "Gohk",
-    target = "Killersmath",
+    paladin = "NONE",
+    target = "NONE",
     status = 1
   },
   [2] = {
-    paladin = "Littleodyn",
-    target = "Killersmath",
+    paladin = "NONE",
+    target = "NONE",
     status = 1
   },
   [3] = {
-    paladin = "Paladin-3",
-    target = "Target-3",
+    paladin = "NONE",
+    target = "NONE",
     status = 1
   },
   [4] = {
     paladin = "NONE",
-    target = "Target-4",
+    target = "NONE",
     status = 1
   },
   [5] = {
     paladin = "NONE",
-    target = "Target-5",
+    target = "NONE",
     status = 1
   }
 }
@@ -109,7 +96,7 @@ end
 function PaladinDIMonitor:CreateWindow()
     -- Main Frame
     self.ui.PaladinDIMonitor = CreateFrame("Frame", nil, UIParent)
-    self.ui.PaladinDIMonitor:SetFrameStrata("DIALOG")
+    self.ui.PaladinDIMonitor:SetFrameStrata("FULLSCREEN_DIALOG")
     self.ui.PaladinDIMonitor:SetWidth(265)
     self.ui.PaladinDIMonitor:SetHeight(172)
     self.ui.PaladinDIMonitor:SetPoint(unpack(self.db.char.WindowPosition))
@@ -133,32 +120,38 @@ function PaladinDIMonitor:CreateWindow()
     self.ui.PaladinDIMonitor:SetBackdropBorderColor(0, 0, 0, 1)
   
     -- Title Frame Background
-    self.ui.PaladinDIMonitor.TitleFrame = CreateFrame("Frame", nil, self.ui.PaladinDIMonitor)
-    self.ui.PaladinDIMonitor.TitleFrame:SetFrameStrata("BACKGROUND")
-    self.ui.PaladinDIMonitor.TitleFrame:SetHeight(30)
-    self.ui.PaladinDIMonitor.TitleFrame:SetPoint("TOPLEFT", 0, 0)
-    self.ui.PaladinDIMonitor.TitleFrame:SetPoint("TOPRIGHT", 0, 0)
-    self.ui.PaladinDIMonitor.TitleFrame:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
+
+    self.ui.PaladinDIMonitor.TitleBackground = CreateFrame("Frame", nil, self.ui.PaladinDIMonitor)
+    self.ui.PaladinDIMonitor.TitleBackground:Lower()
+    self.ui.PaladinDIMonitor.TitleBackground:SetHeight(30)
+    self.ui.PaladinDIMonitor.TitleBackground:SetPoint("TOPLEFT", 0, 0)
+    self.ui.PaladinDIMonitor.TitleBackground:SetPoint("TOPRIGHT", 0, 0)
+    self.ui.PaladinDIMonitor.TitleBackground:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
        edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
        tile="true",
        edgeSize=10,
        tileSize=16,
        insets = {left=2, right=2, top=2, bottom=2}})
-    self.ui.PaladinDIMonitor.TitleFrame:SetBackdropColor(0, 0, 0, 0.7)
-    self.ui.PaladinDIMonitor.TitleFrame:SetBackdropBorderColor(0, 0, 0, 1)
-  
+    self.ui.PaladinDIMonitor.TitleBackground:SetBackdropColor(0, 0, 0, 0.7)
+    self.ui.PaladinDIMonitor.TitleBackground:SetBackdropBorderColor(0, 0, 0, 1)
+
+    -- Title Frame
+    self.ui.PaladinDIMonitor.TitleFrame = CreateFrame("Frame", nil, self.ui.PaladinDIMonitor)
+    self.ui.PaladinDIMonitor.TitleFrame:SetHeight(30)
+    self.ui.PaladinDIMonitor.TitleFrame:SetPoint("TOPLEFT", 0, 0)
+    self.ui.PaladinDIMonitor.TitleFrame:SetPoint("TOPRIGHT", 0, 0)
     -- Title Texts
-    self.ui.PaladinDIMonitor.TitleText_Paladin = self.ui.PaladinDIMonitor:CreateFontString(nil,"ARTWORK") 
+    self.ui.PaladinDIMonitor.TitleText_Paladin = self.ui.PaladinDIMonitor.TitleFrame:CreateFontString(nil,"ARTWORK") 
     self.ui.PaladinDIMonitor.TitleText_Paladin:SetPoint("TOPLEFT", 10, -8)
     self.ui.PaladinDIMonitor.TitleText_Paladin:SetFont(Assigner.constants.FONTS["Roboto-Bold"], 12)
     self.ui.PaladinDIMonitor.TitleText_Paladin:SetText("Paladin")
   
-    self.ui.PaladinDIMonitor.TitleText_Target = self.ui.PaladinDIMonitor:CreateFontString(nil,"ARTWORK") 
+    self.ui.PaladinDIMonitor.TitleText_Target = self.ui.PaladinDIMonitor.TitleFrame:CreateFontString(nil,"ARTWORK") 
     self.ui.PaladinDIMonitor.TitleText_Target:SetPoint("TOPLEFT", self.ui.PaladinDIMonitor.TitleText_Paladin, "TOPLEFT", 110, 0)
     self.ui.PaladinDIMonitor.TitleText_Target:SetFont(Assigner.constants.FONTS["Roboto-Bold"], 12)
     self.ui.PaladinDIMonitor.TitleText_Target:SetText("Target")
   
-    self.ui.PaladinDIMonitor.TitleText_Status = self.ui.PaladinDIMonitor:CreateFontString(nil,"ARTWORK") 
+    self.ui.PaladinDIMonitor.TitleText_Status = self.ui.PaladinDIMonitor.TitleFrame:CreateFontString(nil,"ARTWORK") 
     self.ui.PaladinDIMonitor.TitleText_Status:SetPoint("TOPLEFT", self.ui.PaladinDIMonitor.TitleText_Target, "TOPLEFT", 90, 0)
     self.ui.PaladinDIMonitor.TitleText_Status:SetFont(Assigner.constants.FONTS["Roboto-Bold"], 12)
     self.ui.PaladinDIMonitor.TitleText_Status:SetText("Status")
@@ -189,27 +182,33 @@ function PaladinDIMonitor:CreateWindow()
     end
 
     -- Bottom Frame Background
-    self.ui.PaladinDIMonitor.TitleFrame = CreateFrame("Frame", nil, self.ui.PaladinDIMonitor)
-    self.ui.PaladinDIMonitor.TitleFrame:SetFrameStrata("BACKGROUND")
-    self.ui.PaladinDIMonitor.TitleFrame:SetHeight(26)
-    self.ui.PaladinDIMonitor.TitleFrame:SetPoint("BOTTOMLEFT", 0, 0)
-    self.ui.PaladinDIMonitor.TitleFrame:SetPoint("BOTTOMRIGHT", 0, 0)
-    self.ui.PaladinDIMonitor.TitleFrame:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
+    self.ui.PaladinDIMonitor.BottomBackground = CreateFrame("Frame", nil, self.ui.PaladinDIMonitor)
+    self.ui.PaladinDIMonitor.BottomBackground:Lower()
+    self.ui.PaladinDIMonitor.BottomBackground:SetHeight(26)
+    self.ui.PaladinDIMonitor.BottomBackground:SetPoint("BOTTOMLEFT", 0, 0)
+    self.ui.PaladinDIMonitor.BottomBackground:SetPoint("BOTTOMRIGHT", 0, 0)
+    self.ui.PaladinDIMonitor.BottomBackground:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
         edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
         tile="true",
         edgeSize=10,
         tileSize=16,
         insets = {left=2, right=2, top=2, bottom=2}})
-    self.ui.PaladinDIMonitor.TitleFrame:SetBackdropColor(0, 0, 0, 0.7)
-    self.ui.PaladinDIMonitor.TitleFrame:SetBackdropBorderColor(0, 0, 0, 1)
+    self.ui.PaladinDIMonitor.BottomBackground:SetBackdropColor(0, 0, 0, 0.7)
+    self.ui.PaladinDIMonitor.BottomBackground:SetBackdropBorderColor(0, 0, 0, 1)
+
+    -- Bottom Frame
+    self.ui.PaladinDIMonitor.BottomFrame = CreateFrame("Frame", nil, self.ui.PaladinDIMonitor)
+    self.ui.PaladinDIMonitor.BottomFrame:SetHeight(26)
+    self.ui.PaladinDIMonitor.BottomFrame:SetPoint("BOTTOMLEFT", 0, 0)
+    self.ui.PaladinDIMonitor.BottomFrame:SetPoint("BOTTOMRIGHT", 0, 0)
 
     -- Bottom Texts
-    self.ui.PaladinDIMonitor.TitleText_Paladin = self.ui.PaladinDIMonitor:CreateFontString(nil,"ARTWORK") 
-    self.ui.PaladinDIMonitor.TitleText_Paladin:SetPoint("BOTTOMLEFT", 10, 8)
-    self.ui.PaladinDIMonitor.TitleText_Paladin:SetFont(Assigner.constants.FONTS["Roboto-Bold"], 12)
-    self.ui.PaladinDIMonitor.TitleText_Paladin:SetText("DI Assignement")
+    self.ui.PaladinDIMonitor.BottomText_Left = self.ui.PaladinDIMonitor.BottomFrame:CreateFontString(nil,"ARTWORK") 
+    self.ui.PaladinDIMonitor.BottomText_Left:SetPoint("BOTTOMLEFT", 10, 8)
+    self.ui.PaladinDIMonitor.BottomText_Left:SetFont(Assigner.constants.FONTS["Roboto-Bold"], 12)
+    self.ui.PaladinDIMonitor.BottomText_Left:SetText("DI Assignement")
 
-    local button = CreateFrame("Button", nil, self.ui.PaladinDIMonitor)
+    local button = CreateFrame("Button", nil, self.ui.PaladinDIMonitor.BottomFrame)
 end
 
 function PaladinDIMonitor:UpdateUi()
@@ -263,9 +262,6 @@ end
 
 function PaladinDIMonitor:AceEvent_FullyInitialized()
   self:RegisterEvent("SpellStatus_SpellCastInstant")
-  self:RegisterEvent("Assigner_SendSync")
-  self:RegisterEvent("CHAT_MSG_ADDON")
-
   self:RegisterEvent("Assigner_RecvSync")
 end
 
@@ -298,28 +294,34 @@ end
 
 function PaladinDIMonitor:Assigner_RecvSync(sync, rest, sender)
   if(sync == "ASSCDI") then
-    self.core:Print("Sync " .. sync)
-    self.core:Print("Rest " .. rest)
-    self.core:Print("Nick " .. sender)
-
     local index = self:FindPaladin(sender)
-
-    self.core:Print("Index " .. index)
+    if (index) then
+      if(_players[index].status == 1) then
+        if(rest == _players[index].target) then
+          _players[index].status = 2
+        else
+          _players[index].status = 3
+        end
+        self:UpdateStatusRow(index)
+      end
+    end
+  elseif (sync == "ASSPDI") then
+    local _, _, index, paladin, target = string.find(rest, "(%d+) (%S+) (%S+)") -- "Index Paladin Target"
 
     if (index) then
-      if(rest == _players[index].target) then
-        _players[index].status = 2
-      else
-        _players[index].status = 3
+      index = tonumber(index) -- From string to number
+      _players[index].paladin = paladin
+      _players[index].target = target
+      _players[index].status = 1
+      if(index == 5) then
+        self:UpdateUi()
       end
-
-      self:UpdateStatusRow(index)
     end
   end
 end
 
 function PaladinDIMonitor:SpellStatus_SpellCastInstant(sId, sName, sRank, sFullName, sCastTime)
-  --if sName == BS["Fear Ward"] then
+  if sName == "Divine Intervention" then
 		local targetName = nil
 		if spellTarget then
 			targetName = spellTarget
@@ -333,23 +335,5 @@ function PaladinDIMonitor:SpellStatus_SpellCastInstant(sId, sName, sRank, sFullN
 			end
 		end
     self:TriggerEvent("Assigner_SendSync", "ASSCDI "..targetName)
-  --end
-end
-
-function PaladinDIMonitor:Assigner_SendSync(msg)
-	local _, _, sync, rest = string.find(msg, "(%S+)%s*(.*)$")
-
-	if not sync then return end
-
-  SendAddonMessage("Assigner", msg, "RAID")
-  self:CHAT_MSG_ADDON("Assigner", msg, "RAID", _playerName)
-end
-
-function PaladinDIMonitor:CHAT_MSG_ADDON(prefix, message, type, sender)
-	if prefix ~= "Assigner" or type ~= "RAID" then return end
-
-	local _, _, sync, rest = string.find(message, "(%S+)%s*(.*)$")
-	if not sync then return end
-
-	self:TriggerEvent("Assigner_RecvSync", sync, rest, sender)
+  end
 end

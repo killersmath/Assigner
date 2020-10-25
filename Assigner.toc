@@ -37,6 +37,8 @@ UI.lua
 UI_Utils.lua
 UI_Dropdown.lua
 
+Modules\SyncManager.lua
+
 Modules\GUI\TankPage.lua
 Modules\GUI\StunPummelPage.lua
 Modules\GUI\PaladinPage.lua

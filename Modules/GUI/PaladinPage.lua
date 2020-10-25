@@ -31,7 +31,6 @@ PaladinPage.defaultDB = {
 }
 
 function PaladinPage:OnRegister()
-  self.core:Print(self.name .. " Registered")
   self:CreatePage()
   self:SetupPage()
 end
@@ -59,24 +58,27 @@ function PaladinPage:CreatePage()
   self.ui.frame.pages[self.name].divineInterventionLayout.titleIcon.texture:SetAllPoints(self.ui.frame.pages[self.name].divineInterventionLayout.titleIcon)
   self.ui.frame.pages[self.name].divineInterventionLayout.titleIcon.texture:SetTexture("Interface\\Icons\\spell_nature_timestop")
 
-  self.ui.frame.pages[self.name].divineInterventionLayout.shortAnnounceCheckBox = self.ui:CreateCheckButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionShortAnnounceCheckBox" , {x=25, y=-35}, "Short Announce", function () PaladinPage.db.char.DivineIntervention.ShortStringMode = this:GetChecked() end)
-  self.ui.frame.pages[self.name].divineInterventionLayout.resetAssign = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionResetAssignButton" ,  {x=25, y=-65}, {w=140, h=30}, "Reset Assigns", self.OnDivineInterventionResetAssignClicked)
-  self.ui.frame.pages[self.name].divineInterventionLayout.sendAssign = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionSendAssignButton" , {x=25, y=-97}, {w=140, h=30}, "Send Assign", self.OnDivineInterventionSendAssignClicked)
+  self.ui.frame.pages[self.name].divineInterventionLayout.shortAnnounceCheckBox = self.ui:CreateCheckButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionShortAnnounceCheckBox" , {x=10, y=-35}, "Short Announce", function () PaladinPage.db.char.DivineIntervention.ShortStringMode = this:GetChecked() end)
+  self.ui.frame.pages[self.name].divineInterventionLayout.resetAssign = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionResetAssignButton" ,  {x=10, y=-65}, {w=140, h=30}, "Reset Assigns", self.OnDivineInterventionResetAssignClicked)
+  self.ui.frame.pages[self.name].divineInterventionLayout.sendAssign = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionSendAssignButton" , {x=10, y=-97}, {w=140, h=30}, "Send Assign", self.OnDivineInterventionSendAssignClicked)
 
+  self.ui.frame.pages[self.name].divineInterventionLayout.sendSync = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionSendSyncButton" , {x=155, y=-65}, {w=140, h=30}, "Send Sync", self.OnDivineInterventionSendSyncClicked)
+  self.ui.frame.pages[self.name].divineInterventionLayout.showUI = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionShowUIButton" , {x=155, y=-97}, {w=140, h=30}, "Show UI", function() PaladinDIMonitor:ShowGUI() end)
+  
   --------
   --   Divine intervention Category
   -------
 
   self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeHeader = self.ui.frame.pages[self.name].divineInterventionLayout:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeHeader:SetPoint("TOPLEFT", self.ui.frame.pages[self.name].divineInterventionLayout, "TOPLEFT", 210, -43)
+	self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeHeader:SetPoint("TOPLEFT", self.ui.frame.pages[self.name].divineInterventionLayout, "TOPLEFT", 300, -43)
   self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeHeader:SetText("Channel Type")
 
   self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeGroup = {}
-  self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeRaidCheckBox = self.ui:CreateCheckButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionChannelTypeRaidCheckBox" , {x=210, y=-58}, "Raid", self.OnDivineInterventionChannelTypeCheckBoxClicked)
+  self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeRaidCheckBox = self.ui:CreateCheckButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionChannelTypeRaidCheckBox" , {x=300, y=-58}, "Raid", self.OnDivineInterventionChannelTypeCheckBoxClicked)
   self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeRaidCheckBox.id = 1
-  self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeRaidWarningCheckBox = self.ui:CreateCheckButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionChannelTypeRaidWarningCheckBox" , {x=210, y=-80}, "Raid Warning", self.OnDivineInterventionChannelTypeCheckBoxClicked)
+  self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeRaidWarningCheckBox = self.ui:CreateCheckButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionChannelTypeRaidWarningCheckBox" , {x=300, y=-80}, "Raid Warning", self.OnDivineInterventionChannelTypeCheckBoxClicked)
   self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeRaidWarningCheckBox.id = 2
-  self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeCustomCheckBox = self.ui:CreateCheckButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionChannelTypeCustomCheckBox", {x=210, y=-102}, "Custom Channel", self.OnDivineInterventionChannelTypeCheckBoxClicked)
+  self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeCustomCheckBox = self.ui:CreateCheckButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionChannelTypeCustomCheckBox", {x=300, y=-102}, "Custom Channel", self.OnDivineInterventionChannelTypeCheckBoxClicked)
   self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeCustomCheckBox.id = 3
 
   self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeGroup["ChannelTypeRaidCheckBox"] = self.ui.frame.pages[self.name].divineInterventionLayout.channelTypeRaidCheckBox
@@ -149,6 +151,16 @@ function PaladinPage:OnDivineInterventionResetAssignClicked()
         UIDropDownMenu_SetSelectedValue(getglobal("Page"..PaladinPage.name.."DivineInterventionDropDownPlayer"..i..j), PaladinPage.db.char.DivineIntervention.Players[i][j])
       end
     end
+  end
+end
+
+function PaladinPage:OnDivineInterventionSendSyncClicked()
+  if (IsRaidLeader() or IsRaidOfficer()) then
+    for index, data in pairs(PaladinPage.db.char.DivineIntervention.Players) do
+      PaladinPage:TriggerEvent("Assigner_SendSync", "ASSPDI ".. index .. " " .. data[1] .. " " .. data[2])
+    end
+  else
+    PaladinPage.core:Print("I am not allowed")
   end
 end
 

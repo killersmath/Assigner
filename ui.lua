@@ -9,7 +9,7 @@ function Assigner.ui:CreateUi()
   ---------------
 
   self.frame = CreateFrame("Frame", nil, UIParent)
-  self.frame:SetFrameStrata("DIALOG")
+  self.frame:SetFrameStrata("FULLSCREEN")
   self.frame:SetWidth(670)
   self.frame:SetHeight(480)
   self.frame:SetPoint(unpack(Assigner.db.char.WindowPosition))
