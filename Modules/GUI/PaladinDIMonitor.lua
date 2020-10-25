@@ -234,7 +234,7 @@ function PaladinDIMonitor:UpdateUi()
   if (count == 0) then
     self.ui.PaladinDIMonitor:SetHeight(70)
   else
-    self.ui.PaladinDIMonitor:SetHeight(60 + 22 * count)
+    self.ui.PaladinDIMonitor:SetHeight(58 + 22.10 * count)
   end
 end
 

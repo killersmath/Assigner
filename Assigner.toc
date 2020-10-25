@@ -1,6 +1,6 @@
 ## Interface: 11200
 ## Title: |cFF006699Assigner|r
-## Version: 0.1
+## Version: 0.2
 ## Notes: Assign the Raid Players
 ## Author: Killersmath
 ## DefaultState: enabled

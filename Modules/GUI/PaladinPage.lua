@@ -62,6 +62,9 @@ function PaladinPage:CreatePage()
   self.ui.frame.pages[self.name].divineInterventionLayout.resetAssign = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionResetAssignButton" ,  {x=10, y=-65}, {w=140, h=30}, "Reset Assigns", self.OnDivineInterventionResetAssignClicked)
   self.ui.frame.pages[self.name].divineInterventionLayout.sendAssign = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionSendAssignButton" , {x=10, y=-97}, {w=140, h=30}, "Send Assign", self.OnDivineInterventionSendAssignClicked)
 
+  self.ui.frame.pages[self.name].divineInterventionLayout.interfaceHeader = self.ui.frame.pages[self.name].divineInterventionLayout:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+	self.ui.frame.pages[self.name].divineInterventionLayout.interfaceHeader:SetPoint("TOPLEFT", self.ui.frame.pages[self.name].divineInterventionLayout, "TOPLEFT", 161, -43)
+  self.ui.frame.pages[self.name].divineInterventionLayout.interfaceHeader:SetText("Interface")
   self.ui.frame.pages[self.name].divineInterventionLayout.sendSync = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionSendSyncButton" , {x=155, y=-65}, {w=140, h=30}, "Send Sync", self.OnDivineInterventionSendSyncClicked)
   self.ui.frame.pages[self.name].divineInterventionLayout.showUI = self.ui:CreateButton(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionShowUIButton" , {x=155, y=-97}, {w=140, h=30}, "Show UI", function() PaladinDIMonitor:ShowGUI() end)
   
