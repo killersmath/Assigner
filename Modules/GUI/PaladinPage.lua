@@ -109,7 +109,7 @@ function PaladinPage:CreatePage()
 
   for i=1,5 do
     local dropDown, textHeader
-    dropDown = self.ui:CreateDropDownPlayerMenu(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionDropDownPlayer", i, 1, {x=15,y=-(105+i*50)}, {"PALADIN", "WARRIOR"}, divineClickFunction)
+    dropDown = self.ui:CreateDropDownPlayerMenu(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionDropDownPlayer", i, 1, {x=15,y=-(105+i*50)}, {"PALADIN"}, divineClickFunction)
     textHeader = self.ui.frame.pages[self.name].divineInterventionLayout:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     textHeader:SetPoint("TOP", dropDown, "TOP", 65, 15)
     textHeader:SetText("Paladin " .. i)
