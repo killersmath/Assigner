@@ -30,6 +30,15 @@ PaladinPage.defaultDB = {
   }
 }
 
+local _, _class = UnitClass("player");
+
+-- Overwritte default initialize
+function PaladinPage:OnInitialize()
+  if(_class == "PALADIN") then
+    self.core:RegisterModule(self.name, self)
+  end
+end
+
 function PaladinPage:OnRegister()
   self:CreatePage()
   self:SetupPage()
@@ -100,7 +109,7 @@ function PaladinPage:CreatePage()
 
   for i=1,5 do
     local dropDown, textHeader
-    dropDown = self.ui:CreateDropDownPlayerMenu(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionDropDownPlayer", i, 1, {x=15,y=-(105+i*50)}, {"PALADIN"}, divineClickFunction)
+    dropDown = self.ui:CreateDropDownPlayerMenu(self.ui.frame.pages[self.name].divineInterventionLayout, "Page"..self.name.."DivineInterventionDropDownPlayer", i, 1, {x=15,y=-(105+i*50)}, {"PALADIN", "WARRIOR"}, divineClickFunction)
     textHeader = self.ui.frame.pages[self.name].divineInterventionLayout:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     textHeader:SetPoint("TOP", dropDown, "TOP", 65, 15)
     textHeader:SetText("Paladin " .. i)
@@ -151,7 +160,10 @@ function PaladinPage:OnDivineInterventionResetAssignClicked()
     PaladinPage.db.char.DivineIntervention.Players = PaladinPage.core:Deepcopy(PaladinPage.defaultDB.DivineIntervention.Players)
     for i=1,table.getn(PaladinPage.db.char.DivineIntervention.Players) do
       for j=1,table.getn(PaladinPage.db.char.DivineIntervention.Players[i]) do
-        UIDropDownMenu_SetSelectedValue(getglobal("Page"..PaladinPage.name.."DivineInterventionDropDownPlayer"..i..j), PaladinPage.db.char.DivineIntervention.Players[i][j])
+        local dropDownText = getglobal("Page"..PaladinPage.name.."DivineInterventionDropDownPlayer"..i..j.."Text")
+        if(dropDownText) then
+          dropDownText:SetText(PaladinPage.db.char.DivineIntervention.Players[i][j])
+        end
       end
     end
   end
@@ -160,7 +172,7 @@ end
 function PaladinPage:OnDivineInterventionSendSyncClicked()
   if (IsRaidLeader() or IsRaidOfficer()) then
     for index, data in pairs(PaladinPage.db.char.DivineIntervention.Players) do
-      PaladinPage:TriggerEvent("Assigner_SendSync", "ASSPDI ".. index .. " " .. data[1] .. " " .. data[2])
+        PaladinPage:TriggerEvent("Assigner_SendSync", "ASSPDI ".. index .. " " .. data[1] .. " " .. data[2])
     end
   else
     PaladinPage.core:Print("You are not Raid Leader/Assist.")
@@ -183,7 +195,7 @@ function PaladinPage:HasDivineInterventionAssign()
 end
 
 function PaladinPage:GetDivineInterventionAssignString()
-  local message = "=--- DI Assign ---=\n"
+  local message = "=--- DI Assignement ---=\n"
 
   if(self:HasDivineInterventionAssign()) then
     local count = 1

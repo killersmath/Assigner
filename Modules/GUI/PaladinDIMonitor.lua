@@ -1,8 +1,5 @@
 PaladinDIMonitor = Assigner:NewModule("PaladinDIMonitor")
 
-local _playerName = UnitName("player");
-local _, _class = UnitClass("player");
-
 PaladinDIMonitor.defaultDB = {
   WindowPosition = {"CENTER", 0, 0},
 }
@@ -16,6 +13,9 @@ PaladinDIMonitor.consoleOptions = {
   desc = "Show/Hide Interface",
   func = function() if (PaladinDIMonitor.ui.PaladinDIMonitor:IsShown()) then PaladinDIMonitor.ui.PaladinDIMonitor:Hide() else PaladinDIMonitor.ui.PaladinDIMonitor:Show() end end,
 }
+
+local _playerName = UnitName("player");
+local _, _class = UnitClass("player");
 
 
 local _players = {
@@ -69,9 +69,9 @@ local _statusIcons = {
 
 -- Overwritte default initialize
 function PaladinDIMonitor:OnInitialize()
-  --if(_class == "PALADIN") then
+  if(_class == "PALADIN") then
     self.core:RegisterModule(self.name, self)
-  --end
+  end
 end
 
 function PaladinDIMonitor:OnRegister()
@@ -282,6 +282,23 @@ function PaladinDIMonitor:AssignCount()
   return count
 end
 
+function PaladinDIMonitor:SortPlayers()
+  for i=1,4 do
+    if(_players[i].paladin == "NONE") then
+      for j=(i+1),5 do
+        if(_players[j].paladin ~= "NONE") then
+          local p = _players[i].paladin
+          local t = _players[i].target
+          _players[i].paladin = _players[j].paladin
+          _players[i].target  = _players[j].target
+          _players[j].paladin = p
+          _players[j].target = t
+        end
+      end
+    end
+  end
+end
+
 function PaladinDIMonitor:FindPaladin(name)
   for i, data in pairs(_players) do
     if(data.paladin == name) then
@@ -314,6 +331,7 @@ function PaladinDIMonitor:Assigner_RecvSync(sync, rest, sender)
       _players[index].target = target
       _players[index].status = 1
       if(index == 5) then
+        self:SortPlayers()
         self:UpdateUi()
       end
     end

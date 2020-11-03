@@ -54,7 +54,7 @@ function KickPummelPage:OnRegister()
 end
 
 function KickPummelPage:CreateWindow()
-  self.ui:CreateDefaultPage(self.name, "Stun/Pummel", "Interface\\Icons\\ability_kick")
+  self.ui:CreateDefaultPage(self.name, "Stun/Kick", "Interface\\Icons\\ability_kick")
   self.ui:CreateStandardTopMenuBar(self)
 
   self.ui.frame.pages[self.name].iconFrame = CreateFrame("Frame", nil, self.ui.frame.pages[self.name].topMenuBarFrame)
@@ -146,24 +146,27 @@ function KickPummelPage:GetAssignementString()
   end
 
   if(self:HasPlayerAssign()) then
+    if(self.db.char.ShortStringMode or self.db.char.ChannelType == 2) then
+      message = "Stun/Kick: " .. message
+    end
     local assignement
     firstString = true
 
-    assignement, firstString = self:BuildAssignementRowString(8, firstString, "("..self.core.constants.RAID_TARGETS_NUMBERS[8].."): ")
+    assignement, firstString = self:BuildAssignementRowString(8, firstString, self.core.constants.RAID_TARGETS_NUMBERS[8])
     message = message .. assignement
-    assignement, firstString = self:BuildAssignementRowString(7, firstString, "("..self.core.constants.RAID_TARGETS_NUMBERS[7].."): ")
+    assignement, firstString = self:BuildAssignementRowString(7, firstString, self.core.constants.RAID_TARGETS_NUMBERS[7])
     message = message .. assignement
-    assignement, firstString = self:BuildAssignementRowString(6, firstString, "("..self.core.constants.RAID_TARGETS_NUMBERS[6].."): ")
+    assignement, firstString = self:BuildAssignementRowString(6, firstString, self.core.constants.RAID_TARGETS_NUMBERS[6])
     message = message .. assignement
-    assignement, firstString = self:BuildAssignementRowString(4, firstString, "("..self.core.constants.RAID_TARGETS_NUMBERS[4].."): ")
+    assignement, firstString = self:BuildAssignementRowString(4, firstString, self.core.constants.RAID_TARGETS_NUMBERS[4])
     message = message .. assignement
-    assignement, firstString = self:BuildAssignementRowString(3, firstString, "("..self.core.constants.RAID_TARGETS_NUMBERS[3].."): ")
+    assignement, firstString = self:BuildAssignementRowString(3, firstString, self.core.constants.RAID_TARGETS_NUMBERS[3])
     message = message .. assignement
-    assignement, firstString = self:BuildAssignementRowString(5, firstString, "("..self.core.constants.RAID_TARGETS_NUMBERS[5].."): ")
+    assignement, firstString = self:BuildAssignementRowString(5, firstString, self.core.constants.RAID_TARGETS_NUMBERS[5])
     message = message .. assignement
-    assignement, firstString = self:BuildAssignementRowString(1, firstString, "("..self.core.constants.RAID_TARGETS_NUMBERS[1].."): ")
+    assignement, firstString = self:BuildAssignementRowString(1, firstString, self.core.constants.RAID_TARGETS_NUMBERS[1])
     message = message .. assignement
-    assignement, firstString = self:BuildAssignementRowString(2, firstString, "("..self.core.constants.RAID_TARGETS_NUMBERS[2].."): ")
+    assignement, firstString = self:BuildAssignementRowString(2, firstString, self.core.constants.RAID_TARGETS_NUMBERS[2])
     message = message .. assignement
   else
     message = message .. "No " .. self.ui.frame.pages[self.name].name:GetText()   

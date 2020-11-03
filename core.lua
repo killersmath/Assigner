@@ -144,19 +144,23 @@ function Assigner.modulePrototype:BuildAssignementRowString(row, firstString, pr
         else
           if (not firstString) then
             if(self.db.char.ShortStringMode or self.db.char.ChannelType == 2) then 
-              message = message .. "; "
-            else message = message .. "\n"
+              message = message .. " "
+            else 
+              message = message .. "\n"
             end
           else 
             firstString = false
           end
-
+          message = message .. "[" .. string.upper(prefix) .. "="
           assignFound = true
-          if prefix then message = message .. prefix end
         end
         message = message .. player
       end
     end
+  end
+
+  if(assignFound) then
+    message = message .. "]"
   end
 
   return message, firstString

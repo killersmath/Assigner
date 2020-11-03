@@ -234,7 +234,10 @@ function Assigner.ui:OnStandardResetAssignButtonClicked(module)
     module.db.char.Players = module.core:Deepcopy(module.defaultDB.Players)
     for i=1,table.getn(module.db.char.Players) do
       for j=1,table.getn(module.db.char.Players[i]) do
-        UIDropDownMenu_SetSelectedValue(getglobal("Page"..module.name.."DropDownPlayer"..i..j), module.db.char.Players[i][j])
+        local dropDownText = getglobal("Page"..module.name.."DropDownPlayer"..i..j.."Text")
+        if(dropDownText) then
+          dropDownText:SetText(module.db.char.Players[i][j])
+        end
       end
     end
   end
@@ -252,7 +255,9 @@ function Assigner.ui:OnStandardSendAssignButtonClicked(module)
 end
 
 function Assigner.ui:OnPageSwitch()
-	Assigner.ui.frame.scrollFrames[Assigner.db.char.CurrentPageID]:Hide()
+  if(Assigner.ui.frame.scrollFrames[Assigner.db.char.CurrentPageID]) then -- Corrupted Cache ID
+    Assigner.ui.frame.scrollFrames[Assigner.db.char.CurrentPageID]:Hide()
+  end
 	Assigner.ui.frame.scrollFrames[this.id]:Show()
 	Assigner.db.char.CurrentPageID = this.id
 end
